@@ -1,0 +1,104 @@
+/*************************** Default Settings ****************************/
+
+/* Google font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+:root {
+  --color-bg: rgb(18, 21, 30);
+  --color-nav-bg: rgb(28, 32, 42);
+  --color-sidebar-bg: rgb(35, 40, 50);
+  --color-text: #f5f5f5;
+  --color-input-bg: rgb(45, 50, 60);
+  --color-input-border: rgb(65, 70, 80);
+  --color-placeholder: rgb(140, 145, 155);
+  --color-button-bg: #5ec576;
+  --color-toggle-bg: #ffffff;
+  --color-toggle-bg-hover: #f5f5f5;
+  --color-toggle-text: #000000;
+  --color-button-hover: linear-gradient(to top left, #39b385, #9be15d);
+  --color-shadow: rgba(10, 12, 18, 0.5);
+  --color-shadow-toggle: rgba(235, 240, 255, 0.5);
+  --color-overlay: rgba(10, 12, 18, 0.7);
+
+  --color-primary: #5ec576;
+  --color-secondary: #ffcb03;
+  --color-tertiary: #ff585f;
+  --color-primary-darker: #4bbb7d;
+  --color-secondary-darker: #ffbb00;
+  --color-tertiary-darker: #fd424b;
+  --color-primary-opacity: #5ec5763a;
+  --color-secondary-opacity: #ffcd0331;
+  --color-tertiary-opacity: #ff58602d;
+  --gradient-primary: linear-gradient(to top left, #39b385, #9be15d);
+  --gradient-secondary: linear-gradient(to top left, #ffb003, #ffcb03);
+  --gradient-tertiary: linear-gradient(to top left, #085dff, #48b6ff);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif, Arial, Helvetica;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow-x: hidden;
+  font-size: large;
+  min-height: 100%;
+}
+
+/* Grid System */
+.col-1 { width: 8.33%; }
+.col-2 { width: 16.66%; }
+.col-3 { width: 25%; }
+.col-4 { width: 33.33%; }
+.col-5 { width: 41.66%; }
+.col-6 { width: 50%; }
+.col-7 { width: 58.33%; }
+.col-8 { width: 66.66%; }
+.col-9 { width: 75%; }
+.col-10 { width: 83.33%; }
+.col-11 { width: 91.66%; }
+.col-12 { width: 100%; }
+
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ############################# (Overlay bg) ############################# */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-nav-bg);
+  border-radius: 0.5rem;
+  box-shadow: 0 0rem 2rem var(--color-shadow-toggle);
+  z-index: 10;
+}
+
+.modal i {
+  float: right;
+  font-size: 22px;
+  padding: 10px 20px;
+  color: #928e8e;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-overlay);
+  backdrop-filter: blur(3px);
+  z-index: 5;
+}

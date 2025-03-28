@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comic Generator</title>
+
+  <script src="https://kit.fontawesome.com/c08e825cd8.js" crossorigin="anonymous"></script>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <link rel="stylesheet" href="./css/defaults.css" />
+  <link rel="stylesheet" href="./css/index.css" />
+  <link rel="stylesheet" href="./css/generator.css" />
+
+</head>
+
+<body>
+
+  <div>
+
+    <nav role="navigation" class="primary-navigation">
+      <ul>
+        <!-- From Uiverse.io by Madflows -->
+        <li class="toLeft"><a href="#"><i class="fa-brands fa-phoenix-framework"></i>Home</a></li>
+
+        <li class="toLeft">
+
+        </li>
+
+        <li class="toRight forLineBar signUp"><a href="#">SignUp</a></li>
+        <li class="toRight signIn"><a href="#">SignIn</a></li>
+      </ul>
+    </nav>
+
+  </div>
+
+  <div class="MainTitle">
+    <div>
+
+      <h1>
+        <span class="highlight">AI Image Generator</span>
+        <br />
+        <span class="highlight">
+          Unleash Your Creativity
+        </span>
+      </h1>
+
+      <h3 class="styled-text">Create AI Art with our free AI image generator.</h3>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= Middle ================= -->
+
+  <section class="main-container">
+
+    <section class="middle">
+
+      <div class="left">
+
+        <div class="set-data">
+          <div class="image-dimensions">
+            <div class="dim-text">Image Dimensions</div>
+            <div id="shape-row">
+              <div class="image-shape-btn first-shape active"></div>
+              <div class="image-shape-btn second-shape"></div>
+              <div class="image-shape-btn third-shape"></div>
+              <div class="image-shape-btn fourth-shape"></div>
+              <div class="image-shape-btn fifth-shape"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-place-holder">
+          <div class="text-field">
+            <textarea name="story" id="story" cols="30" rows="10"
+              placeholder="What do you want to generate?"></textarea>
+          </div>
+          <div class="generate-btn">
+            <span>Generate</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="right">
+        <div class="images-section">
+          <div class="image-container first-shape-dimensions">
+
+            <div class="slider-wrapper">
+              <div class="slider"></div> <!-- Images will be inserted here dynamically -->
+            </div>
+
+            <div class="middle-item">
+              <div class="upper">
+                <i class='bx bxs-square-rounded'></i>
+                <i class='bx bxs-square-rounded'></i>
+              </div>
+              <div class="lower">
+                <i class='bx bxs-square-rounded'></i>
+                <i class='bx bxs-square-rounded'></i>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+  </section>
+
+
+
+  <div class="modal">
+    <i class="close fa-solid fa-xmark hidden"></i>
+
+    <div class="signInForm hidden">
+      <form class="form">
+        <div class="flex-column">
+          <label>Email </label>
+        </div>
+        <div class="inputForm">
+          <i class='bx bx-at'></i>
+          <input type="text" class="input" placeholder="Enter your Email" />
+        </div>
+
+        <div class="flex-column">
+          <label>Password </label>
+        </div>
+        <div class="inputForm">
+          <i class='bx bx-lock-alt'></i>
+          <input type="password" class="input" placeholder="Enter your Password" />
+        </div>
+
+        <div class="flex-row">
+          <div>
+            <input type="checkbox" />
+            <label>Remember me </label>
+          </div>
+          <span class="span">Forgot password?</span>
+        </div>
+        <button class="button-submit">Sign In</button>
+        <p class="p">
+          Don't have an account? <span class="span signUp">Sign Up</span>
+        </p>
+        <p class="p line">Or With</p>
+
+        <div class="flex-row">
+          <button class="btn google">
+
+            <img src="./images/Google-Logo.png" alt="logo">
+
+            Google
+          </button>
+          <button class="btn apple">
+            <i class='bx bxl-apple'></i>
+            Apple
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="signUpForm hidden">
+      <form class="form">
+        <h2 class="title">Register</h2>
+        <p class="message">Signup now and get full access to our app.</p>
+
+        <!-- <div class="flex-column"> -->
+        <div class="flex-column">
+          <label>Firstname</label>
+        </div>
+        <div class="inputForm">
+          <input class="input" type="text" placeholder="First name" required="" />
+        </div>
+
+        <div class="flex-column">
+          <label>Lastname</label>
+        </div>
+        <div class="inputForm">
+          <input class="input" type="text" placeholder="Last name" required="" />
+        </div>
+
+        <div class="flex-column">
+          <label>Email </label>
+        </div>
+        <div class="inputForm">
+          <input class="input" type="email" placeholder="Email" required="" />
+        </div>
+
+        <div class="flex-column">
+          <label>Password </label>
+        </div>
+        <div class="inputForm">
+          <input class="input" type="password" placeholder="Password" required="" />
+        </div>
+
+        <div class="flex-column">
+          <label>Confirm Password </label>
+        </div>
+        <div class="inputForm">
+          <input class="input" type="password" placeholder="Confirm Password" required="" />
+        </div>
+
+        <button class="button-submit">Submit</button>
+
+        <p class="p">
+          Already have an account? <span class="span signIn">Sign In</span>
+        </p>
+      </form>
+    </div>
+
+    <div class="showCardDetails"></div>
+  </div>
+
+  <!--The Blur view will come from here-->
+  <div class="overlay hidden"></div>
+
+  <!-- ...................... JS ...................... -->
+  <script src="./src/index.js"></script>
+
+</body>
+
+</html>

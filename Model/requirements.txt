@@ -1,0 +1,27 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic[email]==1.10.12
+sqlalchemy
+jwt
+asyncpg
+
+
+
+# openssl rand -hex 32 # Generate a random 32-byte key
+# OR we use Python to generate a random key
+# python -c 'import secrets; print(secrets.token_hex(32))'
+
+
+# Diffusion Models Requirements...
+
+torch==2.0.1
+torchvision==0.15.2
+torchaudio==2.0.2
+diffusers==0.19.3
+transformers==4.31.0
+numpy==1.24.3
+pillow==9.5.0
+pytorch_lightning

@@ -1,0 +1,38 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environments
+venv/
+.env/
+*.env
+Model/env311/
+
+
+# Ignore model checkpoints and large files
+checkpoints/
+models/
+*.ckpt
+*.safetensors
+
+# Ignore logs and temp files
+logs/
+*.log
+*.out
+*.pid
+*.swp
+
+# Ignore package manager caches
+pip-wheel-metadata/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+*.iml
+
+# Ignore Docker-related files (if not needed in repo)
+*.dockerignore

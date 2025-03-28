@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="../css/defaults.css">
+    <link rel="stylesheet" href="../css/user.css">
+    <link rel="stylesheet" href="../css/generator.css">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+
+<body>
+
+    <!-- ================= Left ================= -->
+    <nav>
+        <div class="logo">
+            <i class='bx bx-menu menu-item'></i>
+            <span class="logo-name">SHassani</span>
+        </div>
+
+        <div class="sidebar">
+            <div class="logo">
+                <i class='bx bx-menu menu-item'></i>
+                <span class="logo-name">SHassani</span>
+            </div>
+
+            <div class="sidebar-content">
+                <ul class="lists">
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-home-alt icon'>
+                                <span class="link">Home</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-map-pin icon'>
+                                <span class="link">Guide</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-book-bookmark icon'>
+                                <span class="link">Novels</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bxl-magento icon'>
+                                <span class="link">My Comics</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-history icon'>
+                                <span class="link">History</span>
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="bottom-content">
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-cog icon'>
+                                <span class="link">Settings</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-log-out icon'>
+                                <span class="link">Logout</span>
+                            </i>
+                        </a>
+                    </li>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="overlay2"></section>
+
+    <!-- ================= Middle ================= -->
+
+    <section class="middle">
+        <div class="left">
+            <div class="set-data">
+                <div class="player-description">
+                    <div class="desc-btn">
+                        <span>Set Player Description</span>
+                    </div>
+                </div>
+                <div class="other-fields">
+                    <!-- Needs to be changed... -->
+                    <div class="inputGroup image-count"><input type="number" min="1" max="10"
+                            placeholder="Number of images (1-10)"></div>
+                    <div class="inputGroup character-count"><input type="number" min="1" max="1"
+                            placeholder="Number of Characters (1)"></div>
+                </div>
+                <div class="image-dimensions">
+                    <div class="dim-text">Image Dimensions</div>
+                    <div id="shape-row">
+                        <div class="image-shape-btn first-shape active"></div>
+                        <div class="image-shape-btn second-shape"></div>
+                        <div class="image-shape-btn third-shape"></div>
+                        <div class="image-shape-btn fourth-shape"></div>
+                        <div class="image-shape-btn fifth-shape"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="story-place-holder">
+                <div class="text-field">
+                    <textarea name="story" id="story" cols="30" rows="10"
+                        placeholder="Write your story here..."></textarea>
+                </div>
+                <div class="generate-btn">
+                    <span>Generate</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="images-section">
+                <div class="image-container first-shape-dimensions">
+
+                    <div id="dots" class="dot-container hidden"></div>
+
+                    <div class="left-arrow hidden"><i class='bx bx-chevron-left'></i></div>
+
+                    <div class="slider-wrapper">
+                        <div class="slider"></div> <!-- Images will be inserted here dynamically -->
+                    </div>
+
+                    <div class="middle-item">
+                        <div class="upper">
+                            <i class='bx bxs-square-rounded'></i>
+                            <i class='bx bxs-square-rounded'></i>
+                        </div>
+                        <div class="lower">
+                            <i class='bx bxs-square-rounded'></i>
+                            <i class='bx bxs-square-rounded'></i>
+                        </div>
+                    </div>
+
+                    <div class="right-arrow hidden"><i class='bx bx-chevron-right'></i></div>
+
+                </div>
+            </div>
+
+            <div class="buttons-container">
+                <div class="prev-btn hidden">
+                    <span>Prev</span>
+                </div>
+                <div class="next-btn hidden">
+                    <span>Next</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= Right ================= -->
+
+
+    <script src="../src/user.js"></script>
+        
+</body>
+
+</html>
