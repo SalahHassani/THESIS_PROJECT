@@ -1,87 +1,81 @@
-:root {
-    --color-bg: rgb(18, 21, 30);
-    --color-card: rgb(35, 40, 50);
-    --color-text: #f5f5f5;
-    --color-button: #5ec576;
-    --color-shadow: rgba(10, 12, 18, 0.5);
-    --color-tertiary: #ff585f;
-}
-
-body {
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    font-family: 'Segoe UI', sans-serif;
-    padding: 40px;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
 .comics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* spacing between cards */
+    justify-content: center; /* center cards on wider screens */
+    padding: 20px;
 }
 
 .comic-card {
-    background-color: var(--color-card);
-    border-radius: 12px;
+    background-color: var(--color-toggle-bg);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    box-shadow: 0 4px 12px var(--color-shadow);
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 300px;
 }
 
-iframe {
+.comic-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.comic-card img {
     width: 100%;
     height: 200px;
-    border: none;
+    object-fit: cover;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .comic-info {
-    padding: 15px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    background-color: var(--color-toggle-bg);
 }
 
 .comic-title {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
 }
 
 .comic-description {
-    font-size: 14px;
-    opacity: 0.85;
+    font-size: 0.875rem;
+    color: var(--color-text);
 }
 
 .card-actions {
     display: flex;
     justify-content: space-between;
+    gap: 12px; /* this adds gap between the Download and Delete buttons */
     margin-top: auto;
 }
 
 .btn {
+    flex: 1;
     padding: 8px 12px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 13px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
 }
 
 .btn-download {
-    background-color: var(--color-button);
-    color: var(--color-bg);
+    background-color: #4caf50;
+    color: white;
 }
 
 .btn-delete {
-    background-color: var(--color-tertiary);
+    background-color: #f44336;
     color: white;
 }
 
 .btn:hover {
-    opacity: 0.9;
+    opacity: 0.95;
 }

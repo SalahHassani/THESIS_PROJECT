@@ -4,7 +4,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 
-:root {
+/* :root {
   --color-bg: rgb(18, 21, 30);
   --color-nav-bg: rgb(28, 32, 42);
   --color-sidebar-bg: rgb(35, 40, 50);
@@ -33,7 +33,46 @@
   --gradient-primary: linear-gradient(to top left, #39b385, #9be15d);
   --gradient-secondary: linear-gradient(to top left, #ffb003, #ffcb03);
   --gradient-tertiary: linear-gradient(to top left, #085dff, #48b6ff);
+} */
+
+:root {
+  --color-bg: rgb(18, 21, 30);
+  --color-nav-bg: rgb(28, 32, 42);
+  --color-sidebar-bg: rgb(35, 40, 50);
+  --color-text: #f5f5f5;
+  --color-input-bg: rgb(45, 50, 60);
+  --color-input-border: rgb(65, 70, 80);
+  --color-placeholder: rgb(140, 145, 155);
+  --color-shadow: rgba(10, 12, 18, 0.5);
+  --color-shadow-toggle: rgba(235, 240, 255, 0.5);
+  --color-overlay: rgba(10, 12, 18, 0.7);
+
+  --color-button-bg: #1d6cff;
+  --color-toggle-bg: #ffffff;
+  --color-toggle-bg-hover: #f5f5f5;
+  --color-toggle-text: #000000;
+
+  --color-primary: #5ec576;
+  --color-secondary: #ffcb03;
+  --color-tertiary: #ff585f;
+  --color-primary-darker: #4bbb7d;
+  --color-secondary-darker: #ffbb00;
+  --color-tertiary-darker: #fd424b;
+  --color-primary-opacity: #5ec5763a;
+  --color-secondary-opacity: #ffcd0331;
+  --color-tertiary-opacity: #ff58602d;
+  --gradient-primary: linear-gradient(to top left, #39b385, #9be15d);
+  --gradient-secondary: linear-gradient(to top left, #ffb003, #ffcb03);
+  --gradient-tertiary: linear-gradient(to top left, #085dff, #48b6ff);
+
+  --toggle-track-dark: #2C3E50;
+  --toggle-track-light: #FFFFFF;
+  --thumb-dark: #4A5568;
+  --thumb-light: #FFFFFF;
+  --sun-color: #F6E05E;
+  --moon-color: #E2E8F0;
 }
+
 
 * {
   margin: 0;
@@ -103,3 +142,72 @@ body {
   backdrop-filter: blur(3px);
   z-index: 5;
 }
+
+
+
+/* ############################# (Toggle Button) ############################# */
+.theme-toggle {
+  margin: 30px;
+  position: relative;
+  width: 100px;
+  height: 50px;
+  border-radius: 30px !important;
+  background: var(--toggle-track-dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50% !important;
+  background: var(--thumb-light);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.icon-toggle-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fa-sun {
+  color: var(--sun-color);
+  opacity: 1;
+}
+
+.fa-moon {
+  color: var(--moon-color);
+  opacity: 0;
+}
+
+.theme-toggle.active {
+  background: var(--toggle-track-light);
+}
+
+.theme-toggle.active .toggle-thumb {
+  transform: translateX(50px);
+  background: var(--thumb-dark);
+}
+
+.theme-toggle.active .fa-sun {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.theme-toggle.active .fa-moon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+
+

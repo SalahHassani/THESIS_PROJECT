@@ -1,7 +1,7 @@
 // =================== CONSTANTS ===================
-const navBar = document.querySelector('nav');
-const menuBtns = document.querySelectorAll('.menu-item');
-const overlay2 = document.querySelector('.overlay2');
+// const navBar = document.querySelector('nav');
+// const menuBtns = document.querySelectorAll('.menu-item');
+// const overlay2 = document.querySelector('.overlay2');
 
 const imageShapeRow = document.querySelector('#shape-row');
 const imageContainer = document.querySelector('.image-container');
@@ -73,8 +73,8 @@ function updateSlider() {
 }
 
 // =================== UI EVENTS ===================
-menuBtns.forEach((btn) => btn.addEventListener('click', () => navBar.classList.toggle('open')));
-overlay2.addEventListener('click', () => navBar.classList.remove('open'));
+// menuBtns.forEach((btn) => btn.addEventListener('click', () => navBar.classList.toggle('open')));
+// overlay2.addEventListener('click', () => navBar.classList.remove('open'));
 
 imageShapeRow.addEventListener('click', (e) => {
     e.preventDefault();
@@ -179,7 +179,7 @@ generateBtn.addEventListener("click", async () => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ text, type: "shassani", count:imageCount })
+            body: JSON.stringify({ text, type: "shassani", count: imageCount })
         });
 
         const data = await response.json();

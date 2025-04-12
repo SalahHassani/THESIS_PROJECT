@@ -21,20 +21,14 @@ async function loadComicsFromServer() {
         comicList.innerHTML = "";
 
         for (const comic of comics) {
-
             if (!comic.pdf_path) continue;
-
-
 
             const pdfPath = comic.pdf_path;
             const basePath = pdfPath.replace(/\.pdf$/, "");
-            const thumbJpg = `${basePath}.jpg`;
             const thumbPng = `${basePath}.png`;
-            const fallbackThumb = "/uploads/defaultThumbnail.png";
+            const fallbackThumb = "../uploads/defaultThumbnail.png";
 
-            let thumbSrc = await checkImageExists(thumbPng)
-                ? thumbPng
-                : (await checkImageExists(thumbJpg) ? thumbJpg : fallbackThumb);
+            const thumbSrc = await checkImageExists(thumbPng) ? thumbPng : fallbackThumb;
 
             renderComicCard(comic, thumbSrc);
         }
@@ -44,6 +38,7 @@ async function loadComicsFromServer() {
         console.error(err);
     }
 }
+
 
 async function checkImageExists(url) {
     return new Promise((resolve) => {
@@ -68,7 +63,6 @@ function renderComicCard(comic, thumbnailSrc) {
                     <div class="comic-description">${comic.story_text}</div>
                     <div class="card-actions">
                     <a class="btn btn-download" href="${comic.pdf_path}" download>Download</a>
-                    <a class="btn btn-download" href="${comic.pdf_path}" target="_blank">Open</a>
                     <button class="btn btn-delete" onclick="deleteComic(${comic.comic_id})">Delete</button>
                     </div>
                 </div>

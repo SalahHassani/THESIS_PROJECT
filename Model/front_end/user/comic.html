@@ -17,88 +17,107 @@
 
 <body>
 
-        <!-- ================= Left ================= -->
-        <nav>
+    <!-- ================= Left ================= -->
+    <nav>
+        <div class="logo">
+            <i class='bx bx-menu menu-item'></i>
+            <span class="logo-name">SHassani</span>
+        </div>
+
+
+        <div class="theme-toggle" id="toggleTheme">
+            <div class="toggle-thumb">
+                <i class="fas fa-sun icon-toggle-btn"></i>
+                <i class="fas fa-moon icon-toggle-btn"></i>
+            </div>
+        </div>
+
+
+        <div class="sidebar">
             <div class="logo">
                 <i class='bx bx-menu menu-item'></i>
                 <span class="logo-name">SHassani</span>
             </div>
-    
-            <div class="sidebar">
-                <div class="logo">
-                    <i class='bx bx-menu menu-item'></i>
-                    <span class="logo-name">SHassani</span>
-                </div>
-    
-                <div class="sidebar-content">
-                    <ul class="lists">
-                        <li class="list">
-                            <a href="/user" class="nav-link">
-                                <i class='bx bx-home-alt icon'>
-                                    <span class="link">Home</span>
-                                </i>
-                            </a>
-                        </li>
-    
-                        <li class="list">
-                            <a href="/guide" class="nav-link">
-                                <i class='bx bx-map-pin icon'>
-                                    <span class="link">Guide</span>
-                                </i>
-                            </a>
-                        </li>
-    
-                        <li class="list active">
-                            <a href="#" class="nav-link">
-                                <i class='bx bxl-magento icon'>
-                                    <span class="link">My Comics</span>
-                                </i>
-                            </a>
-                        </li>
-    
-                        <li class="list">
-                            <a href="/history" class="nav-link">
-                                <i class='bx bx-history icon'>
-                                    <span class="link">History</span>
-                                </i>
-                            </a>
-                        </li>
-                    </ul>
-    
-                    <div class="bottom-content">
-    
-                        <li class="list">
-                            <a href="/settings" class="nav-link">
-                                <i class='bx bx-cog icon'>
-                                    <span class="link">Settings</span>
-                                </i>
-                            </a>
-                        </li>
-    
-                        <li class="list">
-                            <a href="#" class="nav-link">
-                                <i class='bx bx-log-out icon'>
-                                    <span class="link">Logout</span>
-                                </i>
-                            </a>
-                        </li>
-                    </div>
+
+            <div class="sidebar-content">
+                <ul class="lists">
+                    <li class="list">
+                        <a href="/user" class="nav-link">
+                            <i class='bx bx-home-alt icon'>
+                                <span class="link">Home</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="/guide" class="nav-link">
+                            <i class='bx bx-map-pin icon'>
+                                <span class="link">Guide</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list active">
+                        <a href="#" class="nav-link">
+                            <i class='bx bxl-magento icon'>
+                                <span class="link">My Comics</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="/history" class="nav-link">
+                            <i class='bx bx-history icon'>
+                                <span class="link">History</span>
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="bottom-content">
+
+                    <li class="list">
+                        <a href="/settings" class="nav-link">
+                            <i class='bx bx-cog icon'>
+                                <span class="link">Settings</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-log-out icon'>
+                                <span class="link">Logout</span>
+                            </i>
+                        </a>
+                    </li>
                 </div>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-    <h1>📚 My Comic Library</h1>
 
-    <div style="text-align: center; margin-bottom: 20px;">
-        <button class="btn btn-delete" onclick="clearAllComics()">🗑️ Clear All Comics</button>
+    <div class="MainTitle">
+        <div>
+            <h1>
+                <span class="highlight">📚 My Comic Library</span>
+            </h1>
+
+        </div>
+
     </div>
+
+
 
     <div class="comics-grid" id="comicList">
         <!-- Comic cards will be injected here -->
     </div>
 
+    <div class="overlay2"></div>
+
     <script src="../src/comic.js"></script>
-    <script src="../src/user.js"></script>
+    <!-- <script src="../src/user.js"></script> -->
+    <script src="../src/nav.js"></script>
 
 </body>
 
