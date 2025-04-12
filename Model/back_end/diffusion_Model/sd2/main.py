@@ -44,34 +44,66 @@ def clear_folder(folder_path):
             os.remove(os.path.join(folder_path, file))
 
 
+import re
+
+import re
+
+def expand_prompt(prompt: str, count: int) -> list:
+    """
+    Expand a prompt into `count` parts using commas or periods.
+    If parts < count → pad with the last part.
+    If parts > count → truncate to count.
+    """
+    # Split prompt by comma or period
+    parts = re.split(r'[,.]', prompt)
+    
+    # Strip whitespace and remove empty entries
+    parts = [p.strip() for p in parts if p.strip()]
+
+    # Handle edge cases
+    if not parts:
+        return [prompt] * count  # fallback
+
+    if len(parts) >= count:
+        return parts[:count]
+    else:
+        return parts + [parts[-1]] * (count - len(parts))
+
+
+
+
 def generate_image(prompt: str, image_type: str = "guest_user_images", count: int = 1) -> list:
     """
-    Generate image(s) for the given prompt and save them to the correct folder.
-    For 'preview' and 'guest_user_images', clears the folder before saving.
-    For 'shassani', appends numbered images.
+    Generate image(s) for the given prompt and save them in a clean folder.
+    - Always clears the folder before generation.
+    - registered_users: expands prompt and generates multiple images.
+    - Others: generates only 1 image from the original prompt.
     """
-    base_prompt = f"{prompt}. A comic character."
     output_dir = os.path.join(BASE_OUTPUT_DIR, image_type)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Clear folder if it's preview or guest
-    if image_type in ["preview", "guest_user_images"]:
-        clear_folder(output_dir)
-        index_start = 1
+    # ✅ Clear folder before generation
+    clear_folder(output_dir)
+
+    # 🧠 Expand only for registered users
+    if image_type == "shassani":
+        try:
+            prompts = expand_prompt(prompt, count)
+        except Exception as e:
+            print(f"⚠️ Prompt expansion failed: {e} — fallback to repeating original.")
+            prompts = [prompt] * count
     else:
-        existing = [
-            f for f in os.listdir(output_dir)
-            if f.endswith((".png", ".jpg", ".jpeg")) and f.startswith(image_type)
-        ]
-        index_start = len(existing) + 1
+        prompts = [prompt]  # Only one image needed for preview/guest
 
     generated_paths = []
 
-    for i in range(count):
-        print(f"🧪 Generating {image_type} image {i + 1}/{count}...")
+    for i, current_prompt in enumerate(prompts):
+        full_prompt = f"{current_prompt}. A comic character."
+
+        print(f"🧪 Generating image {i + 1}/{len(prompts)} → {full_prompt}")
 
         output_image = pipeline.generate(
-            prompt=base_prompt,
+            prompt=full_prompt,
             uncond_prompt="",
             input_image=None,
             strength=0.8,
@@ -86,7 +118,7 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
             tokenizer=tokenizer,
         )
 
-        filename = f"{image_type}_{index_start + i}.png"
+        filename = f"{image_type}_{i + 1}.png"
         file_path = os.path.join(output_dir, filename)
 
         Image.fromarray(output_image).save(file_path)
