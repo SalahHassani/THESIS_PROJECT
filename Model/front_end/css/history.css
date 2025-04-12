@@ -1,0 +1,72 @@
+body {
+    margin: 0;
+    padding: 40px;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.history-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: var(--color-sidebar-bg);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--color-shadow);
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+}
+
+.history-item {
+    border: 1px solid var(--color-input-border);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: var(--color-input-bg);
+    position: relative;
+}
+
+.history-item p {
+    margin: 5px 0;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--color-button-bg);
+    border: none;
+    color: var(--color-text);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.delete-btn:hover {
+    background: var(--gradient-tertiary);
+}
+
+.clear-all {
+    display: block;
+    width: 100%;
+    background: var(--color-button-bg);
+    color: var(--color-text);
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: transform 0.5s ease-in-out;
+}
+
+.clear-all:hover {
+    background: var(--gradient-tertiary);
+}

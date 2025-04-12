@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="../css/user.css">
     <link rel="stylesheet" href="../css/generator.css">
 
+
+    <script src="https://kit.fontawesome.com/c08e825cd8.js" crossorigin="anonymous"></script>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
 </head>
@@ -31,7 +33,7 @@
 
             <div class="sidebar-content">
                 <ul class="lists">
-                    <li class="list">
+                    <li class="list active">
                         <a href="#" class="nav-link">
                             <i class='bx bx-home-alt icon'>
                                 <span class="link">Home</span>
@@ -40,7 +42,7 @@
                     </li>
 
                     <li class="list">
-                        <a href="#" class="nav-link">
+                        <a href="/guide" class="nav-link">
                             <i class='bx bx-map-pin icon'>
                                 <span class="link">Guide</span>
                             </i>
@@ -48,15 +50,7 @@
                     </li>
 
                     <li class="list">
-                        <a href="#" class="nav-link">
-                            <i class='bx bx-book-bookmark icon'>
-                                <span class="link">Novels</span>
-                            </i>
-                        </a>
-                    </li>
-
-                    <li class="list">
-                        <a href="#" class="nav-link">
+                        <a href="/comic" class="nav-link">
                             <i class='bx bxl-magento icon'>
                                 <span class="link">My Comics</span>
                             </i>
@@ -64,7 +58,7 @@
                     </li>
 
                     <li class="list">
-                        <a href="#" class="nav-link">
+                        <a href="/history" class="nav-link">
                             <i class='bx bx-history icon'>
                                 <span class="link">History</span>
                             </i>
@@ -75,7 +69,7 @@
                 <div class="bottom-content">
 
                     <li class="list">
-                        <a href="#" class="nav-link">
+                        <a href="/settings" class="nav-link">
                             <i class='bx bx-cog icon'>
                                 <span class="link">Settings</span>
                             </i>
@@ -98,7 +92,25 @@
 
     <!-- ================= Middle ================= -->
 
-    <section class="middle">
+    <div class="MainTitle">
+        <div>
+
+            <h1>
+                <span class="highlight">AI Image Generator</span>
+                <br />
+                <span class="highlight">
+                    Unleash Your Creativity
+                </span>
+            </h1>
+
+            <h3 class="styled-text">Create AI Art with our free AI image generator.</h3>
+
+        </div>
+
+    </div>
+
+    <section class="middle main-container">
+
         <div class="left">
             <div class="set-data">
                 <div class="player-description">
@@ -127,7 +139,7 @@
             </div>
             <div class="story-place-holder">
                 <div class="text-field">
-                    <textarea name="story" id="story" cols="30" rows="10"
+                    <textarea name="story" id="story charStory" cols="30" rows="10"
                         placeholder="Write your story here..."></textarea>
                 </div>
                 <div class="generate-btn">
@@ -165,21 +177,141 @@
             </div>
 
             <div class="buttons-container">
-                <div class="prev-btn hidden">
-                    <span>Prev</span>
+
+                <div class="clear-download-btns hidden">
+                    <div class="clear-btn">
+                        <i class='bx bx-refresh i'></i>
+                        <span> Clear</span>
+                    </div>
+                    <div class="download-btn">
+                        <span>Save</span>
+                        <i class='bx bx-save'></i>
+                    </div>
                 </div>
-                <div class="next-btn hidden">
-                    <span>Next</span>
+
+                <div class="next-prev-btns">
+                    <div class="prev-btn hidden">
+                        <i class='bx bx-chevron-left i'></i>
+                        <span>Prev</span>
+                    </div>
+                    <div class="next-btn hidden">
+                        <span>Next</span>
+                        <i class='bx bx-chevron-right i'></i>
+                    </div>
                 </div>
+
             </div>
         </div>
     </section>
 
+
+
+    <div class="modal hidden chracter-decs-form">
+        <i class="close fa-solid fa-xmark"></i>
+
+        <div class="form-container" id="formContainer">
+            <div class="character-box">
+                <div class="form-section">
+                    <h3>Character Traits</h3>
+
+                    <input type="text" placeholder="Name" id="charName" />
+                    <input type="text" placeholder="Age" id="charAge" />
+
+                    <select id="charGender">
+                        <option value="">Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Non-binary</option>
+                        <option>Alien</option>
+                        <option>Robot</option>
+                        <option>Other</option>
+                    </select>
+
+                    <select id="charHair">
+                        <option value="">Hair Style/Color</option>
+                        <option>Short Black</option>
+                        <option>Long Blonde</option>
+                        <option>Spiky Red</option>
+                        <option>Bald</option>
+                        <option>White Mohawk</option>
+                        <option>Purple Curly</option>
+                        <option>Blue Braided</option>
+                    </select>
+
+                    <select id="charEyes">
+                        <option value="">Eye Color</option>
+                        <option>Blue</option>
+                        <option>Green</option>
+                        <option>Brown</option>
+                        <option>Hazel</option>
+                        <option>Red (Mutant)</option>
+                        <option>Golden</option>
+                        <option>Glowing White</option>
+                    </select>
+
+                    <select id="charClothes">
+                        <option value="">Clothing Style</option>
+                        <option>Superhero Suit</option>
+                        <option>Casual Hoodie</option>
+                        <option>Armor</option>
+                        <option>Steampunk Gear</option>
+                        <option>Robe & Hood</option>
+                        <option>Cyberpunk Jacket</option>
+                        <option>Formal Suit</option>
+                    </select>
+
+                    <select id="charSpecial">
+                        <option value="">Special Features</option>
+                        <option>Scar over eye</option>
+                        <option>Robotic arm</option>
+                        <option>Wings</option>
+                        <option>Tattoos</option>
+                        <option>Horns</option>
+                        <option>Glowing Aura</option>
+                        <option>Mask</option>
+                    </select>
+
+                    <button class="generate-btn preview-image-btn">Generate Image</button>
+                </div>
+
+                <div class="image-section">
+                    <h3>Generated Character</h3>
+                    <div class="image-placeholder" id="imagePreview">
+                        No image generated yet
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="modal download-form hidden">
+        <div class="form-container">
+            <h3>Save or Download Character</h3>
+            <p>
+                You can either save this character to your personal database for later access, or download it directly
+                to your device as a file.
+            </p>
+
+            <div class="form-actions">
+                <div class="btn download-images-btn"> Download <i class='bx bxs-download'></i> </div>
+                <div class="btn save-images-btn"> Save <i class='bx bx-save'></i></div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="overlay hidden"></div>
+
+
     <!-- ================= Right ================= -->
 
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../src/user.js"></script>
-        
+
+
 </body>
 
 </html>

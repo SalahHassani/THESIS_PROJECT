@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Comics</title>
+    <link rel="stylesheet" href="../css/defaults.css" />
+    <link rel="stylesheet" href="../css/user.css" />
+    <link rel="stylesheet" href="../css/generator.css" />
+    <link rel="stylesheet" href="../css/comic.css">
+
+
+    <script src="https://kit.fontawesome.com/c08e825cd8.js" crossorigin="anonymous"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+
+        <!-- ================= Left ================= -->
+        <nav>
+            <div class="logo">
+                <i class='bx bx-menu menu-item'></i>
+                <span class="logo-name">SHassani</span>
+            </div>
+    
+            <div class="sidebar">
+                <div class="logo">
+                    <i class='bx bx-menu menu-item'></i>
+                    <span class="logo-name">SHassani</span>
+                </div>
+    
+                <div class="sidebar-content">
+                    <ul class="lists">
+                        <li class="list">
+                            <a href="/user" class="nav-link">
+                                <i class='bx bx-home-alt icon'>
+                                    <span class="link">Home</span>
+                                </i>
+                            </a>
+                        </li>
+    
+                        <li class="list">
+                            <a href="/guide" class="nav-link">
+                                <i class='bx bx-map-pin icon'>
+                                    <span class="link">Guide</span>
+                                </i>
+                            </a>
+                        </li>
+    
+                        <li class="list active">
+                            <a href="#" class="nav-link">
+                                <i class='bx bxl-magento icon'>
+                                    <span class="link">My Comics</span>
+                                </i>
+                            </a>
+                        </li>
+    
+                        <li class="list">
+                            <a href="/history" class="nav-link">
+                                <i class='bx bx-history icon'>
+                                    <span class="link">History</span>
+                                </i>
+                            </a>
+                        </li>
+                    </ul>
+    
+                    <div class="bottom-content">
+    
+                        <li class="list">
+                            <a href="/settings" class="nav-link">
+                                <i class='bx bx-cog icon'>
+                                    <span class="link">Settings</span>
+                                </i>
+                            </a>
+                        </li>
+    
+                        <li class="list">
+                            <a href="#" class="nav-link">
+                                <i class='bx bx-log-out icon'>
+                                    <span class="link">Logout</span>
+                                </i>
+                            </a>
+                        </li>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+    <h1>📚 My Comic Library</h1>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button class="btn btn-delete" onclick="clearAllComics()">🗑️ Clear All Comics</button>
+    </div>
+
+    <div class="comics-grid" id="comicList">
+        <!-- Comic cards will be injected here -->
+    </div>
+
+    <script src="../src/comic.js"></script>
+    <script src="../src/user.js"></script>
+
+</body>
+
+</html>

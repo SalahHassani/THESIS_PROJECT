@@ -103,9 +103,9 @@ imageShapeRow.addEventListener('click', (e) => {
 });
 
 // ************** Image Loading **************
-function loadImages(imageName) {
+function loadImages(url) {
   let img = new Image();
-  img.src = `${imagesPath}` + `${imageName}`;
+  img.src = `${url}`;
   img.alt = `Image not found`;
 
   img.onload = () => imageSlider.appendChild(img);
@@ -113,40 +113,49 @@ function loadImages(imageName) {
 }
 
 // ************** Image Generation **************
+// ************** Guest User Image Generation **************
 generateBtn.addEventListener("click", async () => {
   const text = textArea.value.trim();
   if (!text) {
-      alert("Please enter some text before generating!");
-      return;
+    alert("Please enter some text before generating!");
+    return;
   }
 
-  console.log("Sending request to /api/generate-image with text:", text);
+  console.log("📤 Sending request to /api/generate-image with text:", text);
 
   try {
-      const response = await fetch("http://127.0.0.1:8001/api/generate-image", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: text })
-      });
+    const response = await fetch("http://127.0.0.1:8001/api/generate-image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        text: text,
+        type: "guest_user_images",
+        count: 1
+      })
+    });
 
-      if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
 
-      const data = await response.json();
-      console.log("Response:", data);
+    const data = await response.json();
+    console.log("✅ Response:", data);
 
-      if (data.image_name) {
-          loadImages(data.image_name);
-      } else {
-          console.error("No image URL received");
-      }
+    if (data.image_paths && data.image_paths.length > 0) {
+      const imgUrl = data.image_paths[0];
+      loadImages(imgUrl); 
+    } else {
+      console.error("❌ No image path received");
+    }
 
-      middleItem.classList.add('hidden');
+    middleItem.classList.add('hidden');
   } catch (error) {
-      console.error("Error:", error);
+    console.error("❌ Error:", error);
   }
 });
+
 
 
 

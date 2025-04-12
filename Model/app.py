@@ -2,97 +2,96 @@ import os
 import sys
 import logging
 import uvicorn
-from fastapi import FastAPI, Request, Depends, HTTPException, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+import logging
+
+from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+# 🧠 Internal imports
 from back_end.database.db import get_db
 from back_end.database.models import User
 from back_end.database.schemas import UserLogin, UserRegister
 from back_end.database.auth import verify_password, create_access_token, hash_password
+from back_end.database.db import router as db_router
+from back_end.diffusion_Model.sd2 import main  # Image generator
 
-
-# Logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-import sys
-import os
-
+# 📁 Directory Paths
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
-SD2_DIR = os.path.join(BACKEND_DIR, "back_end", "diffusion_Model", "sd2")
-
-if SD2_DIR not in sys.path:
-    sys.path.append(SD2_DIR)  # ✅ Add the sd2 folder to the import path
-
 FRONTEND_DIR = os.path.join(BACKEND_DIR, "front_end")
+SD2_DIR = os.path.join(BACKEND_DIR, "back_end", "diffusion_Model", "sd2")
 USER_HTML_PATH = os.path.join(FRONTEND_DIR, "user", "user.html")
 INDEX_HTML_PATH = os.path.join(FRONTEND_DIR, "index.html")
 
-from back_end.diffusion_Model.sd2 import main
 
+# Add this line to create the logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Initialize FastAPI app
+# ⛓️ Add image generation path to sys
+if SD2_DIR not in sys.path:
+    sys.path.append(SD2_DIR)
+
+# 🚀 FastAPI app init
 app = FastAPI()
 
-# CORS
+# 🌍 Enable CORS for frontend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For dev only
+    allow_origins=["*"],  # 🔓 Development only
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Static files
+# 📂 Mount Static & Image Folders
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 app.mount("/images", StaticFiles(directory=os.path.join(FRONTEND_DIR, "images")), name="images")
+app.mount("/images/preview", StaticFiles(directory=os.path.join(FRONTEND_DIR, "images", "preview")), name="preview")
+app.mount("/images/guest_user_images", StaticFiles(directory=os.path.join(FRONTEND_DIR, "images", "guest_user_images")), name="guest_user_images")
+app.mount("/images/shassani", StaticFiles(directory=os.path.join(FRONTEND_DIR, "images", "shassani")), name="shassani")
 app.mount("/src", StaticFiles(directory=os.path.join(FRONTEND_DIR, "src")), name="src")
 app.mount("/css", StaticFiles(directory=os.path.join(FRONTEND_DIR, "css")), name="css")
+app.mount("/uploads", StaticFiles(directory=os.path.join(FRONTEND_DIR, "uploads")), name="uploads")
 
-
-
-# Serve index.html
+# 🏠 Homepage
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
     with open(INDEX_HTML_PATH, "r") as f:
         return HTMLResponse(content=f.read())
 
-# Serve user.html (after frontend confirms login)
+# 👤 User dashboard
 @app.get("/user", response_class=HTMLResponse)
 async def serve_user():
     with open(USER_HTML_PATH, "r") as f:
         return HTMLResponse(content=f.read())
 
-
-# Generate image endpoint
+# 🎨 Image Generation Endpoint
 @app.post("/api/generate-image")
 async def generate_image(request: Request):
     """
-    API to generate an image based on user input prompt.
+    Generate multiple images based on prompt and type.
+    Accepts optional 'count' field (default is 1).
     """
     data = await request.json()
     prompt = data.get("text", "")
+    image_type = data.get("type", "guest_user_images")
+    count = data.get("count", 1)
 
     if not prompt:
-        return {"error": "No prompt provided."}
+        raise HTTPException(status_code=400, detail="No prompt provided.")
 
-    print(f"Received Prompt: {prompt}")
-
-    # Call the image generation function
-    image_filename = main.generate_image(prompt)
-
-    print(f"Image In app.py: {image_filename}")
-    
+    images = main.generate_image(prompt, image_type, count)
     return {
-        "message": "Image generated successfully",
-        "image_name": image_filename
+        "message": f"{len(images)} image(s) generated successfully",
+        "image_paths": images
     }
 
-# Register endpoint
+
+# 📝 Registration
 @app.post("/api/register")
 async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     logger.info("Registering new user...")
@@ -109,12 +108,10 @@ async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     db.add(new_user)
     await db.commit()
 
-    print(f"Registered new user: {new_user.first_name} {new_user.last_name}")
-
     token = create_access_token(data={"sub": new_user.email})
     return {"message": "Registered successfully", "access_token": token}
 
-# Login endpoint
+# 🔐 Login
 @app.post("/api/login")
 async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == user_data.email))
@@ -125,9 +122,32 @@ async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
 
     logger.info(f"Login successful for user: {user.email}")
     token = create_access_token(data={"sub": user.email})
-
     return {"message": "Login successful", "access_token": token}
 
-# Run app
+# 🔌 Include DB routes
+app.include_router(db_router)
+
+# 📄 Serve other frontend pages
+@app.get("/guide", response_class=HTMLResponse)
+async def serve_guide():
+    with open(os.path.join(FRONTEND_DIR, "user", "guide.html"), encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+@app.get("/comic", response_class=HTMLResponse)
+async def serve_comic():
+    with open(os.path.join(FRONTEND_DIR, "user", "comic.html"), encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+@app.get("/history", response_class=HTMLResponse)
+async def serve_history():
+    with open(os.path.join(FRONTEND_DIR, "user", "history.html"), encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+@app.get("/settings", response_class=HTMLResponse)
+async def serve_settings():
+    with open(os.path.join(FRONTEND_DIR, "user", "settings.html"), encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
+
+# ▶️ Run App
 if __name__ == "__main__":
     uvicorn.run("app:app", host="127.0.0.1", port=8001, reload=True)

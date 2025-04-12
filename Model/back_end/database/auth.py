@@ -1,8 +1,10 @@
+# ---------------------- auth.py ----------------------
+
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import jwt
 
-SECRET_KEY = "shassani"  # Change this in production!
+SECRET_KEY = "4ffe57b0833f048a04c90652e263fb87c3b85f480f485a370804db2bd5b38b21"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -16,6 +18,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
-    expire = datetime.now() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

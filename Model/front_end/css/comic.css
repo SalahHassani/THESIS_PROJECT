@@ -1,0 +1,87 @@
+:root {
+    --color-bg: rgb(18, 21, 30);
+    --color-card: rgb(35, 40, 50);
+    --color-text: #f5f5f5;
+    --color-button: #5ec576;
+    --color-shadow: rgba(10, 12, 18, 0.5);
+    --color-tertiary: #ff585f;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Segoe UI', sans-serif;
+    padding: 40px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.comics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.comic-card {
+    background-color: var(--color-card);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--color-shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+iframe {
+    width: 100%;
+    height: 200px;
+    border: none;
+}
+
+.comic-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comic-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.comic-description {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+}
+
+.btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.btn-download {
+    background-color: var(--color-button);
+    color: var(--color-bg);
+}
+
+.btn-delete {
+    background-color: var(--color-tertiary);
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}

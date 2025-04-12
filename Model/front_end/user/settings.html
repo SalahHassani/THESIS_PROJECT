@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="../css/defaults.css">
+    <link rel="stylesheet" href="../css/user.css">
+    <link rel="stylesheet" href="../css/settings.css">
+    <link rel="stylesheet" href="../css/generator.css">
+
+    <script src="https://kit.fontawesome.com/c08e825cd8.js" crossorigin="anonymous"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+
+<body>
+
+    <!-- ================= Left ================= -->
+    <nav>
+        <div class="logo">
+            <i class='bx bx-menu menu-item'></i>
+            <span class="logo-name">SHassani</span>
+        </div>
+
+        <div class="sidebar">
+            <div class="logo">
+                <i class='bx bx-menu menu-item'></i>
+                <span class="logo-name">SHassani</span>
+            </div>
+
+            <div class="sidebar-content">
+                <ul class="lists">
+                    <li class="list">
+                        <a href="/user" class="nav-link">
+                            <i class='bx bx-home-alt icon'>
+                                <span class="link">Home</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="/guide" class="nav-link">
+                            <i class='bx bx-map-pin icon'>
+                                <span class="link">Guide</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="/comic" class="nav-link">
+                            <i class='bx bxl-magento icon'>
+                                <span class="link">My Comics</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="/history" class="nav-link">
+                            <i class='bx bx-history icon'>
+                                <span class="link">History</span>
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="bottom-content">
+
+                    <li class="list active">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-cog icon'>
+                                <span class="link">Settings</span>
+                            </i>
+                        </a>
+                    </li>
+
+                    <li class="list">
+                        <a href="#" class="nav-link">
+                            <i class='bx bx-log-out icon'>
+                                <span class="link">Logout</span>
+                            </i>
+                        </a>
+                    </li>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="MainTitle">
+        <div>
+            <h1>
+                <span class="highlight">
+                    Account Settings
+                </span>
+            </h1>
+        </div>
+    </div>
+
+
+    <div class="settings-container">
+
+
+        <!-- Name -->
+        <div class="setting-group">
+            <h3>Name: <span id="currentName">John Doe</span></h3>
+            <button class="edit-btn" onclick="toggleEdit('name')">Edit</button>
+        </div>
+        <div class="edit-form" id="editName">
+            <input type="text" placeholder="Enter new name" />
+            <div class="form-actions">
+                <button class="btn cancel-btn" onclick="toggleEdit('name')">Cancel</button>
+                <button class="btn">Save</button>
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="setting-group">
+            <h3>Email: <span id="currentEmail">user@example.com</span></h3>
+            <button class="edit-btn" onclick="toggleEdit('email')">Edit</button>
+        </div>
+        <div class="edit-form" id="editEmail">
+            <input type="email" placeholder="Enter current email" />
+            <input type="email" placeholder="Enter new email" />
+            <input type="email" placeholder="Confirm new email" />
+            <div class="form-actions">
+                <button class="btn cancel-btn" onclick="toggleEdit('email')">Cancel</button>
+                <button class="btn">Save</button>
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div class="setting-group">
+            <h3>Password: <span>********</span></h3>
+            <button class="edit-btn" onclick="toggleEdit('password')">Edit</button>
+        </div>
+        <div class="edit-form" id="editPassword">
+            <input type="password" placeholder="Enter current password" />
+            <input type="password" placeholder="Enter new password" />
+            <input type="password" placeholder="Confirm new password" />
+            <div class="form-actions">
+                <button class="btn cancel-btn" onclick="toggleEdit('password')">Cancel</button>
+                <button class="btn">Save</button>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+            <h3>Danger Zone</h3>
+            <p>Once you delete your account, there is no going back. Please be certain.</p>
+
+            <form onsubmit="return confirmDelete()">
+                <button class="btn delete-btn">Delete Account Permanently</button>
+            </form>
+        </div>
+    </div>
+
+
+
+    <section class="overlay2"></section>
+    <section class="overlay hidden"></section>
+    <!-- ============================ -->
+
+
+    <script src="../src/history.js"></script>
+    <script src="../src/user.js"></script>
+
+    <script>
+        function toggleEdit(section) {
+            const form = document.getElementById("edit" + capitalize(section));
+            form.style.display = form.style.display === "block" ? "none" : "block";
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function confirmDelete() {
+            return confirm("Are you sure you want to permanently delete your account?");
+        }
+    </script>
+
+
+</body>
+
+</html>

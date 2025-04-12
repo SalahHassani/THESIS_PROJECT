@@ -2,6 +2,48 @@
 /* *************************************** */
 /* ************************************** */
 
+/* ############################# (Intro) ############################# */
+.MainTitle {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    overflow: hidden;
+  }
+  
+  .MainTitle h1 {
+    text-align: center;
+    margin: 2%;
+  }
+  
+  .highlight {
+    padding-left: 1%;
+    position: relative;
+    color: var(--color-text);
+    text-shadow: 1px 1px 1px var(--color-shadow);
+  }
+  
+  .highlight::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 5px 10px;
+    z-index: -1;
+    opacity: 0.8;
+    transform: scale(1.2, 1.2) skewX(-16deg);
+    background: var(--gradient-tertiary);
+  }
+  
+  
+  .styled-text {
+    margin: 10px 0;
+    color: var(--color-text);
+    font-size: 20px;
+    font-weight: 500;
+  }
+
 .main-container {
     margin: 0 7%;
     padding: 1% 3%;
@@ -9,7 +51,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 16px;
-    background-color: var(--color-nav-bg);
+    background-color: var(--color-sidebar-bg);
   }
   
 
@@ -441,23 +483,43 @@ input::placeholder {
     border-bottom-right-radius: 7px;
     background-color: var(--color-nav-bg);
     box-shadow: 0 1px 5px rgba(255, 255, 255, 0.6);
-    gap: 10%;
+    gap: 20%;
 }
 
-.middle .right .buttons-container .prev-btn,
-.middle .right .buttons-container .next-btn {
-    width: 200px;
-    height: 90%;
-    background: var(--color-primary);
-    border-radius: 5px;
+.buttons-container .clear-download-btns i,
+.buttons-container .next-prev-btns i {
+    font-size: 25px;
+}
+
+.clear-download-btns,
+.next-prev-btns {
+    width: 50%;
+    height: 100%;
+    /* background: var(--color-primary); */
+    /* border-radius: 5px; */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    gap: 10%;
 }
 
-.middle .right .buttons-container .prev-btn:hover,
+
+
+.middle .right .buttons-container .prev-btn,
+.middle .right .buttons-container .next-btn,
+.clear-btn,
+.download-btn {
+    width: 100px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* .middle .right .buttons-container .prev-btn:hover,
 .middle .right .buttons-container .next-btn:hover {
     background-image: var(--color-button-hover);
-}
+} */

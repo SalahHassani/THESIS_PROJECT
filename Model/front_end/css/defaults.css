@@ -12,7 +12,7 @@
   --color-input-bg: rgb(45, 50, 60);
   --color-input-border: rgb(65, 70, 80);
   --color-placeholder: rgb(140, 145, 155);
-  --color-button-bg: #5ec576;
+  --color-button-bg: #1d6cff;
   --color-toggle-bg: #ffffff;
   --color-toggle-bg-hover: #f5f5f5;
   --color-toggle-text: #000000;
@@ -90,6 +90,7 @@ body {
   font-size: 22px;
   padding: 10px 20px;
   color: #928e8e;
+  cursor: pointer;
 }
 
 .overlay {

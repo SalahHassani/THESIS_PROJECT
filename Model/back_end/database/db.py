@@ -1,16 +1,24 @@
+# ---------------------- db.py ----------------------
+
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import timedelta
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import select
-
+import os
+from uuid import uuid4
 from pydantic import BaseModel
+
+from back_end.database.models import Comic, User
+
+
+from back_end.database.models import Comic
 from back_end.database.models import User as DBUser
 from back_end.database.schemas import UserLogin, UserResponse, UserRegister
-from back_end.database.auth import verify_password, create_access_token, hash_password
+from back_end.database.auth import verify_password, create_access_token, hash_password, SECRET_KEY, ALGORITHM
 
 # Database Configuration
 URL_DATABASE = "postgresql+asyncpg://postgres:shassani@localhost:5432/diffusion_model_db"
@@ -27,10 +35,7 @@ async def get_db():
 db_dependency = Annotated[AsyncSession, Depends(get_db)]
 
 # Auth Configuration
-SECRET_KEY = "4ffe57b0833f048a04c90652e263fb87c3b85f480f485a370804db2bd5b38b21"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 
 # FastAPI Router
 router = APIRouter()
@@ -60,12 +65,10 @@ async def login_for_access_token(db: AsyncSession = Depends(get_db), form_data: 
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )
-
     return {"access_token": access_token, "token_type": "bearer"}
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
@@ -95,7 +98,6 @@ async def read_users_me(db: AsyncSession = Depends(get_db), current_user: DBUser
 async def register_user(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(DBUser).where(DBUser.email == user_data.email))
     existing_user = result.scalar_one_or_none()
-
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -108,3 +110,94 @@ async def register_user(user_data: UserRegister, db: AsyncSession = Depends(get_
     db.add(new_user)
     await db.commit()
     return {"message": "User registered successfully"}
+
+# PDF Upload Handling
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "front_end")
+PDF_STORAGE_PATH = os.path.join(FRONTEND_DIR, "uploads", "pdfs")
+os.makedirs(PDF_STORAGE_PATH, exist_ok=True)
+
+@router.post("/upload-pdf")
+async def upload_pdf(
+    title: str = Form(...),
+    story_text: str = Form(...),
+    pdf: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user)
+):
+    if not pdf.filename.endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
+
+    file_ext = os.path.splitext(pdf.filename)[1]
+    unique_filename = f"{uuid4()}{file_ext}"
+    file_path = os.path.join(PDF_STORAGE_PATH, unique_filename)
+
+    with open(file_path, "wb") as f:
+        content = await pdf.read()
+        f.write(content)
+
+    relative_path = f"/uploads/pdfs/{unique_filename}"
+
+    new_comic = Comic(
+        user_id=current_user.user_id,
+        title=title,
+        story_text=story_text,
+        images_path=relative_path,
+        total_pages=1
+    )
+    db.add(new_comic)
+    await db.commit()
+
+    return {
+        "message": "Comic uploaded successfully",
+        "path": relative_path,
+        "title": title
+    }
+
+
+
+
+
+@router.get("/api/user/comics")
+async def get_user_comics(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.execute(select(Comic).where(Comic.user_id == current_user.user_id))
+    comics = result.scalars().all()
+
+    return [
+        {
+            "id": comic.comic_id,
+            "title": comic.title,
+            "description": comic.story_text,
+            "pdf_path": comic.images_path,
+            "created_at": str(comic.created_at)
+        }
+        for comic in comics
+    ]
+
+
+
+
+@router.delete("/api/user/comics/{comic_id}")
+async def delete_comic(
+    comic_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user)
+):
+    result = await db.execute(select(Comic).where(Comic.comic_id == comic_id, Comic.user_id == current_user.user_id))
+    comic = result.scalar_one_or_none()
+
+    if not comic:
+        raise HTTPException(status_code=404, detail="Comic not found")
+
+    # Delete PDF file
+    pdf_path = os.path.join(FRONTEND_DIR, comic.images_path.lstrip("/"))
+    if os.path.exists(pdf_path):
+        os.remove(pdf_path)
+
+    # Delete from DB
+    await db.delete(comic)
+    await db.commit()
+
+    return {"message": "Comic deleted"}

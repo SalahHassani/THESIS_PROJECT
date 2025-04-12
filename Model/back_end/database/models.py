@@ -13,7 +13,7 @@ class User(Base):
     last_name = Column(String(50), nullable=False)
     email = Column(String(50), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
-    role = Column(String(20), default='User', nullable=False)
+    role = Column(String(20), default='Registered User', nullable=False)
     credits = Column(Integer, default=0, nullable=False)
 
     __table_args__ = (

@@ -1,0 +1,99 @@
+.settings-container {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: var(--color-sidebar-bg);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--color-shadow);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.setting-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--color-input-border);
+}
+
+.setting-group h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    color: var(--color-button-bg);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.edit-form {
+    display: none;
+    margin: 15px 0;
+}
+
+.edit-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-input-border);
+    border-radius: 8px;
+    color: var(--color-text);
+}
+
+.edit-form input::placeholder {
+    color: var(--color-placeholder);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--color-text);
+    background: var(--color-button-bg);
+    transition: transform 0.5s ease-in-out;
+    box-shadow: 0 2px 6px var(--color-shadow);
+    text-shadow: 0 2px 6px var(--color-shadow);
+}
+
+.btn:hover {
+    background: var(--color-button-hover);
+}
+
+.cancel-btn {
+    background: transparent;
+    color: var(--color-placeholder);
+    border: 1px solid var(--color-input-border);
+}
+
+.danger-zone {
+    margin-top: 20px;
+    border-top: 1px solid var(--color-input-border);
+    padding-top: 10px;
+}
+
+.delete-btn {
+    float: right;
+    background: var(--color-tertiary);
+    width: 40%;
+}
+
+.delete-btn:hover {
+    background: var(--color-tertiary-darker);
+}
