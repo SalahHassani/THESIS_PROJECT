@@ -14,6 +14,8 @@ from transformers import CLIPTokenizer
 import model_loader
 import pipeline
 
+import re
+
 # Setup device
 DEVICE = "cpu"
 ALLOW_CUDA = False
@@ -43,10 +45,6 @@ def clear_folder(folder_path):
         if file.lower().endswith((".png", ".jpg", ".jpeg")):
             os.remove(os.path.join(folder_path, file))
 
-
-import re
-
-import re
 
 def expand_prompt(prompt: str, count: int) -> list:
     """
@@ -97,10 +95,12 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
 
     generated_paths = []
 
+    print(f"🧪 Generating {len(prompts)} image(s) for {image_type}...")
+
     for i, current_prompt in enumerate(prompts):
         full_prompt = f"{current_prompt}. A comic character."
 
-        print(f"🧪 Generating image {i + 1}/{len(prompts)} → {full_prompt}")
+        print(f"🧪 Generating image {i + 1}/{len(prompts)} → {count}")
 
         output_image = pipeline.generate(
             prompt=full_prompt,
@@ -110,7 +110,7 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
             do_cfg=True,
             cfg_scale=8,
             sampler_name="ddpm",
-            n_inference_steps=3,
+            n_inference_steps=1,
             seed=42 + i,
             models=models,
             device=DEVICE,
