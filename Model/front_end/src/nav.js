@@ -59,3 +59,30 @@ toggle.addEventListener("click", () => {
   isLight ? setColors(lightColors) : setColors(darkColors);
   localStorage.setItem("theme-toggle", isLight ? "light" : "dark");
 });
+
+
+// Secure Logout Function
+async function logoutUser() {
+  try {
+    const response = await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include", // ensure cookies are sent
+    });
+
+    if (response.ok) {
+      alert("Logged out successfully.");
+      window.location.href = "/";
+    } else {
+      alert("Logout failed.");
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert("An error occurred during logout.");
+  }
+}
+
+// Example: Attach to a logout button
+document.querySelector("#logout-btn")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  logoutUser();
+});
