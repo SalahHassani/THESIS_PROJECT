@@ -39,6 +39,7 @@ models = model_loader.preload_models_from_standard_weights(model_file, DEVICE)
 
 BASE_OUTPUT_DIR = os.path.abspath(os.path.join("..", "Model", "front_end", "images"))
 
+PREVIEW_IMAGE_DIR = os.path.abspath(os.path.join("..", "Model", "back_end", "diffusion_Model", "images"))
 
 def clear_folder(folder_path):
     for file in os.listdir(folder_path):
@@ -70,7 +71,7 @@ def expand_prompt(prompt: str, count: int) -> list:
 
 
 
-def generate_image(prompt: str, image_type: str = "guest_user_images", count: int = 1) -> list:
+def generate_image(prompt: str, image_type: str = "guest_user_images", count: int = 1, epochs: int = 1, inpaint: bool = False) -> list:
     """
     Generate image(s) for the given prompt and save them in a clean folder.
     - Always clears the folder before generation.
@@ -82,6 +83,12 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
 
     # ✅ Clear folder before generation
     clear_folder(output_dir)
+
+    input_image = None
+    # Comment to disable image to image
+    if inpaint:
+        input_image = Image.open(os.path.join(PREVIEW_IMAGE_DIR, "preview_1.png"))
+
 
     # 🧠 Expand only for registered users
     if image_type == "shassani":
@@ -95,7 +102,7 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
 
     generated_paths = []
 
-    print(f"🧪 Generating {len(prompts)} image(s) for {image_type}...")
+    print(f"🧪 Generating {len(prompts)} image(s) for {image_type}, InPainting {inpaint}")
 
     for i, current_prompt in enumerate(prompts):
         full_prompt = f"{current_prompt}. A comic character."
@@ -110,7 +117,7 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
             do_cfg=True,
             cfg_scale=8,
             sampler_name="ddpm",
-            n_inference_steps=1,
+            n_inference_steps=epochs,
             seed=42 + i,
             models=models,
             device=DEVICE,
@@ -123,6 +130,13 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
 
         Image.fromarray(output_image).save(file_path)
         generated_paths.append(f"/images/{image_type}/{filename}")
+
+        if image_type == "preview":
+            os.makedirs(PREVIEW_IMAGE_DIR, exist_ok=True)  # Ensure directory exists
+            preview_path = os.path.join(PREVIEW_IMAGE_DIR, filename)
+            Image.fromarray(output_image).save(preview_path)
+
+
         print(f"✅ Saved: {file_path}")
 
     return generated_paths

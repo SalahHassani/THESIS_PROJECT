@@ -1,14 +1,16 @@
-const token = localStorage.getItem("access_token");
+"use strict";
 
+// =================== DOM References ===================
+const comicList = document.getElementById("comicList");
+
+// =================== Load Comics ===================
 async function loadComicsFromServer() {
-    const comicList = document.getElementById("comicList");
     comicList.innerHTML = "Loading comics...";
 
     try {
         const response = await fetch("/api/user/comics", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            method: "GET",
+            credentials: "include" // ✅ Send cookie for auth
         });
 
         const comics = await response.json();
@@ -23,23 +25,22 @@ async function loadComicsFromServer() {
         for (const comic of comics) {
             if (!comic.pdf_path) continue;
 
-            const pdfPath = comic.pdf_path;
-            const basePath = pdfPath.replace(/\.pdf$/, "");
-            const thumbPng = `${basePath}.png`;
-            const fallbackThumb = "../uploads/defaultThumbnail.png";
+            const pdfFileName = comic.pdf_path.split("/").pop().replace(/\.pdf$/, "");
+            const thumbPath = `/uploads/thumbnails/${pdfFileName}.png`;
+            const fallbackThumb = "/uploads/defaultThumbnail.png";
 
-            const thumbSrc = await checkImageExists(thumbPng) ? thumbPng : fallbackThumb;
+            const thumbSrc = await checkImageExists(thumbPath) ? thumbPath : fallbackThumb;
 
             renderComicCard(comic, thumbSrc);
         }
 
     } catch (err) {
+        console.error("Error loading comics:", err);
         comicList.innerHTML = "<p>Error loading comics.</p>";
-        console.error(err);
     }
 }
 
-
+// =================== Helpers ===================
 async function checkImageExists(url) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -50,37 +51,34 @@ async function checkImageExists(url) {
 }
 
 function renderComicCard(comic, thumbnailSrc) {
-    console.log("Rendering comic:", comic.title, "with thumbnail:", thumbnailSrc);
     const card = document.createElement("div");
     card.className = "comic-card";
 
     card.innerHTML = `
-                <a href="${comic.pdf_path}" target="_blank">
-                    <img src="${thumbnailSrc}" alt="Comic Thumbnail" />
-                </a>
-                <div class="comic-info">
-                    <div class="comic-title">${comic.title}</div>
-                    <div class="comic-description">${comic.story_text}</div>
-                    <div class="card-actions">
-                    <a class="btn btn-download" href="${comic.pdf_path}" download>Download</a>
-                    <button class="btn btn-delete" onclick="deleteComic(${comic.comic_id})">Delete</button>
-                    </div>
-                </div>
-            `;
+        <a href="${comic.pdf_path}" target="_blank">
+            <img src="${thumbnailSrc}" alt="Comic Thumbnail" />
+        </a>
+        <div class="comic-info">
+            <div class="comic-title">${comic.title}</div>
+            <div class="comic-description">${comic.story_text}</div>
+            <div class="card-actions">
+                <a class="btn btn-download" href="${comic.pdf_path}" download>Download</a>
+                <button class="btn btn-delete" onclick="deleteComic(${comic.comic_id})">Delete</button>
+            </div>
+        </div>
+    `;
 
-
-    document.getElementById("comicList").appendChild(card);
+    comicList.appendChild(card);
 }
 
+// =================== Delete Comic ===================
 async function deleteComic(comicId) {
     if (!confirm("Delete this comic permanently?")) return;
 
     try {
         const response = await fetch(`/api/user/comics/${comicId}`, {
             method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            credentials: "include" // ✅ Send auth cookie
         });
 
         if (response.ok) {
@@ -95,15 +93,14 @@ async function deleteComic(comicId) {
     }
 }
 
+// =================== Clear All ===================
 async function clearAllComics() {
     if (!confirm("Are you sure you want to delete ALL your comics? This cannot be undone.")) return;
 
     try {
         const response = await fetch("/api/user/comics", {
             method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            credentials: "include" // ✅ Send auth cookie
         });
 
         if (response.ok) {
@@ -118,5 +115,5 @@ async function clearAllComics() {
     }
 }
 
-// load comics when the page is loaded
+// =================== Init ===================
 window.addEventListener("DOMContentLoaded", loadComicsFromServer);

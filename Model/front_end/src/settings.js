@@ -3,14 +3,11 @@
 // ========================
 
 document.addEventListener("DOMContentLoaded", async () => {
-
-
-    
-    const token = localStorage.getItem("access_token");
+    console.log("Profile settings script loaded.");
     const notify = (msg, isError = false) => alert(msg);
-    if (!token) return;
 
     const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+
     const toggleEdit = section => {
         const form = document.getElementById("edit" + capitalize(section));
         if (form) {
@@ -45,10 +42,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const res = await fetch("/api/update-profile", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ new_name: nameInput })
         });
 
@@ -72,10 +67,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const res = await fetch("/api/update-profile", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ current_email: current, new_email: newEmail })
         });
 
@@ -99,10 +92,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const res = await fetch("/api/update-profile", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ current_password: current, new_password: newPass })
         });
 
@@ -113,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else notify(data.detail || "Failed to update password", true);
     });
 
-    // ======= Delete Account (no password needed) =======
+    // ======= Delete Account =======
     document.querySelector("#deleteAccountForm")?.addEventListener("submit", async e => {
         e.preventDefault();
 
@@ -122,14 +113,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const res = await fetch("/api/delete-account", {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                }
+                credentials: "include"
             });
 
             if (res.ok) {
-                localStorage.removeItem("access_token");
                 alert("Account deleted successfully.");
                 window.location.href = "/";
             } else {
@@ -145,14 +132,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     // ======= Load User Info =======
     try {
         const res = await fetch("/users/me", {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
+            method: "GET",
+            credentials: "include"
         });
 
         if (!res.ok) throw new Error("User fetch failed");
 
         const user = await res.json();
+        console.log("User profile loaded:", user);
         const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim();
         document.getElementById("currentName").textContent = fullName || "Unknown User";
         document.getElementById("currentEmail").textContent = user.email || "unknown@example.com";

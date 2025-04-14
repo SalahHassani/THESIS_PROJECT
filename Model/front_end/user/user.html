@@ -24,7 +24,7 @@
             <i class='bx bx-menu menu-item'></i>
             <span class="logo-name">SHassani</span>
         </div>
-        
+
         <div class="theme-toggle" id="toggleTheme">
             <div class="toggle-thumb">
                 <i class="fas fa-sun icon-toggle-btn"></i>
@@ -129,8 +129,15 @@
                     <!-- Needs to be changed... -->
                     <div class="inputGroup image-count"><input type="number" min="1" max="10"
                             placeholder="Number of images (1-10)"></div>
-                    <div class="inputGroup character-count"><input type="number" min="1" max="1"
-                            placeholder="Number of Characters (1)"></div>
+                    <!-- <div class="inputGroup character-count"><input type="number" min="1" max="1"
+                            placeholder="Number of Characters (1)"></div> -->
+                    <div class="epochs-slider-container">
+                        <label for="epochsRange">Epochs</label>
+                        <input type="range" id="epochsRange" min="1" max="100" value="1" class="epochs-slider" />
+                        <span id="epochsValue">1</span>
+                    </div>
+
+
                 </div>
                 <div class="image-dimensions">
                     <div class="dim-text">Image Dimensions</div>
@@ -278,7 +285,11 @@
                         <option>Mask</option>
                     </select>
 
-                    <button class="generate-btn preview-image-btn">Generate Image</button>
+                    <div class="preview-btns">
+                        <button class="generate-btn preview-apply-btn hidden">Apply</button>
+                        <button class="generate-btn preview-image-btn">Generate Image</button>
+                    </div>
+
                 </div>
 
                 <div class="image-section">

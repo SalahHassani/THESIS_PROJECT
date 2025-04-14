@@ -111,7 +111,7 @@
 }
 
 .middle .left .set-data .player-description .desc-btn:hover {
-    background-color: #ccc;
+    background-color: var(--color-text)
 }
 
 .middle .left .set-data .other-fields {
@@ -523,3 +523,88 @@ input::placeholder {
 .middle .right .buttons-container .next-btn:hover {
     background-image: var(--color-button-hover);
 } */
+
+.epochs-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 50%;
+    color: var(--color-text);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 0 10px;
+  }
+  
+  /* Label */
+  .epochs-slider-container label {
+    white-space: nowrap;
+    min-width: 50px;
+  }
+  
+  /* Value */
+  .epochs-slider-container #epochsValue {
+    min-width: 30px;
+    text-align: right;
+    font-weight: 600;
+  }
+  
+  /* ============================= */
+  /* Actual Slider (Track + Thumb) */
+  /* ============================= */
+  .epochs-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 2px; /* Thin track */
+    background: var(--color-input-border); /* Match your theme */
+    border-radius: 1px;
+    outline: none;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  /* ---------- Chrome / Safari ---------- */
+  .epochs-slider::-webkit-slider-runnable-track {
+    height: 2px; /* Ensure thin track */
+    background: var(--color-input-border);
+    border-radius: 1px;
+  }
+  
+  .epochs-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -13px; /* Center tall thumb over thin line */
+    width: 6px;
+    height: 28px;
+    background: #48b6ff;
+    border-radius: 3px;
+    border: none;
+    box-shadow: 0 0 5px #48b6ff;
+    transition: transform 0.2s ease;
+  }
+  
+  .epochs-slider::-webkit-slider-thumb:hover {
+    transform: scaleY(1.2);
+  }
+  
+  /* ---------- Firefox ---------- */
+  .epochs-slider::-moz-range-track {
+    height: 2px;
+    background: var(--color-input-border);
+    border-radius: 1px;
+  }
+  
+  .epochs-slider::-moz-range-thumb {
+    width: 6px;
+    height: 28px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 3px;
+    box-shadow: 0 0 5px var(--color-primary);
+    transition: transform 0.2s ease;
+  }
+  
+  .epochs-slider::-moz-range-thumb:hover {
+    transform: scaleY(1.2);
+  }
+  

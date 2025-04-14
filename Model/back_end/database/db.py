@@ -180,40 +180,96 @@ FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "f
 PDF_STORAGE_PATH = os.path.join(FRONTEND_DIR, "uploads", "pdfs")
 os.makedirs(PDF_STORAGE_PATH, exist_ok=True)
 
+# @router.post("/upload-pdf")
+# async def upload_pdf(
+#     title: str = Form(...),
+#     story_text: str = Form(...),
+#     pdf: UploadFile = File(...),
+#     db: AsyncSession = Depends(get_db),
+#     current_user: DBUser = Depends(get_current_user)
+# ):
+#     if not pdf.filename.endswith(".pdf"):
+#         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
+
+#     file_ext = os.path.splitext(pdf.filename)[1]
+#     unique_filename = f"{uuid4()}{file_ext}"
+#     file_path = os.path.join(PDF_STORAGE_PATH, unique_filename)
+
+#     with open(file_path, "wb") as f:
+#         content = await pdf.read()
+#         f.write(content)
+
+#     relative_path = f"/uploads/pdfs/{unique_filename}"
+
+#     new_comic = Comic(
+#         user_id=current_user.user_id,
+#         title=title,
+#         story_text=story_text,
+#         images_path=relative_path,
+#         total_pages=1
+#     )
+#     db.add(new_comic)
+#     await db.commit()
+
+#     return {
+#         "message": "Comic uploaded successfully",
+#         "path": relative_path,
+#         "title": title
+#     }
+
 @router.post("/upload-pdf")
 async def upload_pdf(
     title: str = Form(...),
     story_text: str = Form(...),
     pdf: UploadFile = File(...),
+    thumbnail: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     current_user: DBUser = Depends(get_current_user)
 ):
     if not pdf.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
-    file_ext = os.path.splitext(pdf.filename)[1]
-    unique_filename = f"{uuid4()}{file_ext}"
-    file_path = os.path.join(PDF_STORAGE_PATH, unique_filename)
+    # Prepare unique name for both PDF and thumbnail
+    file_id = str(uuid4())
+    pdf_filename = f"{file_id}.pdf"
+    thumb_filename = f"{file_id}.png"
 
-    with open(file_path, "wb") as f:
+    # Define storage paths
+    PDF_DIR = os.path.join(FRONTEND_DIR, "uploads", "pdfs")
+    THUMB_DIR = os.path.join(FRONTEND_DIR, "uploads", "thumbnails")
+    os.makedirs(PDF_DIR, exist_ok=True)
+    os.makedirs(THUMB_DIR, exist_ok=True)
+
+    pdf_path = os.path.join(PDF_DIR, pdf_filename)
+    thumb_path = os.path.join(THUMB_DIR, thumb_filename)
+
+    # Save PDF
+    with open(pdf_path, "wb") as f:
         content = await pdf.read()
         f.write(content)
 
-    relative_path = f"/uploads/pdfs/{unique_filename}"
+    # Save Thumbnail (PNG)
+    with open(thumb_path, "wb") as f:
+        content = await thumbnail.read()
+        f.write(content)
 
+    # Relative path to access in frontend
+    relative_pdf_path = f"/uploads/pdfs/{pdf_filename}"
+
+    # Save comic metadata to DB
     new_comic = Comic(
         user_id=current_user.user_id,
         title=title,
         story_text=story_text,
-        images_path=relative_path,
+        images_path=relative_pdf_path,
         total_pages=1
     )
     db.add(new_comic)
     await db.commit()
 
     return {
-        "message": "Comic uploaded successfully",
-        "path": relative_path,
+        "message": "Comic and thumbnail uploaded successfully",
+        "path": relative_pdf_path,
         "title": title
     }
 

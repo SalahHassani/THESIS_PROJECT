@@ -12,6 +12,8 @@ from sqlalchemy.future import select
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
+
+
 # Internal imports
 from back_end.database.db import get_db
 from back_end.database.models import User
@@ -19,6 +21,7 @@ from back_end.database.schemas import UserLogin, UserRegister
 from back_end.database.auth import verify_password, create_access_token, hash_password, SECRET_KEY, ALGORITHM
 from back_end.database.db import router as db_router
 from back_end.diffusion_Model.sd2 import main
+
 
 # Paths
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -44,6 +47,9 @@ if SD2_DIR not in sys.path:
 
 # FastAPI app
 app = FastAPI()
+
+app.include_router(db_router)
+
 
 # CORS
 app.add_middleware(
@@ -107,9 +113,12 @@ async def generate_image(request: Request):
     prompt = data.get("text", "")
     image_type = data.get("type", "guest_user_images")
     count = data.get("count", 1)
+    epochs = data.get("epochs", 1)
+    inpaint = data.get("inPainting", False)
+    print(f"Prompt: {prompt}, Type: {image_type}, Count: {count}, Epochs: {epochs}, Inpainting: {inpaint}")
     if not prompt:
         raise HTTPException(status_code=400, detail="No prompt provided.")
-    images = main.generate_image(prompt, image_type, count)
+    images = main.generate_image(prompt, image_type, count, epochs, inpaint)
     return {"message": f"{len(images)} image(s) generated successfully", "image_paths": images}
 
 # Register
