@@ -10,18 +10,6 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-# class UserResponse(BaseModel):
-#     user_id: int
-#     email: EmailStr
-#     first_name: str
-#     last_name: str
-#     role: str
-#     credits: int
-
-#     model_config = {
-#         "from_attributes": True
-#     }
-
 class UserResponse(BaseModel):
     user_id: int
     email: EmailStr
@@ -33,7 +21,6 @@ class UserResponse(BaseModel):
     class Config:
         orm_mode = True  # 👈 this is required for `.from_orm()`
 
-
 class ProfileUpdateRequest(BaseModel):
     new_name: str | None = None
     current_email: EmailStr | None = None
@@ -41,3 +28,12 @@ class ProfileUpdateRequest(BaseModel):
     current_password: str | None = None
     new_password: str | None = None
 
+class CharacterData(BaseModel):  # ⬆ New schema for character history
+    name: str
+    age: str
+    gender: str
+    hair: str
+    eyes: str
+    clothes: str
+    special: str
+    description: str

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, Numeric, Date, TIMESTAMP, CheckConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, Numeric, Date, TIMESTAMP, CheckConstraint, desc
+
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -22,7 +23,8 @@ class User(Base):
 
     comics = relationship("Comic", back_populates="user", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
-    admin = relationship("Admin", uselist=False, back_populates="user", cascade="all, delete-orphan")
+    # admin = relationship("Admin", uselist=False, back_populates="user", cascade="all, delete-orphan")
+    history = relationship("CharacterHistory", back_populates="user", cascade="all, delete-orphan")  # ⬆ Add this
 
 class Comic(Base):
     __tablename__ = "comics"
@@ -58,12 +60,31 @@ class Payment(Base):
 
     user = relationship("User", back_populates="payments")
 
-class Admin(Base):
-    __tablename__ = "admins"
+# class Admin(Base):
+#     __tablename__ = "admins"
 
-    admin_id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), unique=True, nullable=False)
-    permissions = Column(Text, nullable=False)
-    created_at = Column(Date, default=datetime.utcnow)
+#     admin_id = Column(Integer, primary_key=True, index=True)
+#     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), unique=True, nullable=False)
+#     permissions = Column(Text, nullable=False)
+#     created_at = Column(Date, default=datetime.utcnow)
 
-    user = relationship("User", back_populates="admin")
+#     user = relationship("User", back_populates="admin")
+
+
+
+class CharacterHistory(Base):  # ⬆ New table for search history
+    __tablename__ = "character_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(100))
+    age = Column(String(50))
+    gender = Column(String(50))
+    hair = Column(String(100))
+    eyes = Column(String(100))
+    clothes = Column(String(100))
+    special = Column(String(255))
+    description = Column(Text)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="history")

@@ -12,12 +12,14 @@ import os
 from uuid import uuid4
 from pydantic import BaseModel
 
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, Numeric, Date, TIMESTAMP, CheckConstraint, desc
+
 from back_end.database.models import Comic, User
 
 
-from back_end.database.models import Comic
+from back_end.database.models import Comic, CharacterHistory
 from back_end.database.models import User as DBUser
-from back_end.database.schemas import UserLogin, UserResponse, UserRegister, ProfileUpdateRequest
+from back_end.database.schemas import UserLogin, UserResponse, UserRegister, ProfileUpdateRequest, CharacterData
 from back_end.database.auth import verify_password, create_access_token, hash_password, SECRET_KEY, ALGORITHM
 
 # Database Configuration
@@ -435,3 +437,98 @@ async def delete_user_as_admin(user_id: int, db: AsyncSession = Depends(get_db))
         return {"message": "User and comics deleted"}
     else:
         raise HTTPException(status_code=404, detail="User not found")
+
+
+
+@router.post("/api/save-history")  # ⬆ Save character history for logged-in user
+async def save_character_history(
+    data: CharacterData,
+    db: AsyncSession = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user)
+):
+    # 🔄 Check last 2–3 history records for similarity
+    result = await db.execute(
+        select(CharacterHistory)
+        .where(CharacterHistory.user_id == current_user.user_id)
+        .order_by(desc(CharacterHistory.created_at))
+        .limit(3)
+    )
+    recent = result.scalars().all()
+
+    for item in recent:
+        if (
+            item.name == data.name and
+            item.age == data.age and
+            item.description == data.description
+        ):
+            return {"message": "Duplicate history skipped"}
+
+    # ✅ Save if it's a new/different history
+    new_entry = CharacterHistory(
+        user_id=current_user.user_id,
+        **data.dict()
+    )
+    db.add(new_entry)
+    await db.commit()
+    return {"message": "History saved"}
+
+
+@router.get("/api/get-history")  # ⬆ Get character history for user
+async def get_character_history(
+    db: AsyncSession = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user)
+):
+    result = await db.execute(
+        select(CharacterHistory)
+        .where(CharacterHistory.user_id == current_user.user_id)
+        .order_by(desc(CharacterHistory.created_at))
+    )
+    items = result.scalars().all()
+    return [
+        {
+            "id": i.id,  # ⬅️ Add this line
+            "name": i.name,
+            "age": i.age,
+            "gender": i.gender,
+            "hair": i.hair,
+            "eyes": i.eyes,
+            "clothes": i.clothes,
+            "special": i.special,
+            "description": i.description,
+            "created_at": i.created_at.isoformat()
+        }
+        for i in items
+    ]
+
+
+@router.delete("/api/delete-history/{id}")  # ⬆ Delete individual history
+async def delete_history_entry(id: int, db: AsyncSession = Depends(get_db), current_user: DBUser = Depends(get_current_user)):
+    result = await db.execute(select(CharacterHistory).where(CharacterHistory.id == id, CharacterHistory.user_id == current_user.user_id))
+    item = result.scalar_one_or_none()
+    if not item:
+        raise HTTPException(status_code=404, detail="History not found")
+    await db.delete(item)
+    await db.commit()
+    return {"message": "History item deleted"}
+
+
+@router.delete("/api/clear-history")  # 🧹 Clear all history for user
+async def clear_all_history(
+    db: AsyncSession = Depends(get_db),
+    current_user: DBUser = Depends(get_current_user)
+):
+    # 🔍 Select all history entries
+    result = await db.execute(
+        select(CharacterHistory)
+        .where(CharacterHistory.user_id == current_user.user_id)
+    )
+    items = result.scalars().all()
+
+    if not items:
+        return {"message": "No history to delete"}
+
+    for item in items:
+        await db.delete(item)
+
+    await db.commit()
+    return {"message": "All history cleared"}

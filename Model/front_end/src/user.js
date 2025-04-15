@@ -176,7 +176,8 @@ generateBtn.addEventListener("click", async (e) => {
                 nextBtn.classList.remove('hidden');
                 clearDownloadBtns.classList.remove('hidden');
             }
-            StoreInLocalStore();
+            // StoreInLocalStore();
+            saveHistoryToBackend();
         } else {
             middleItem.innerHTML = "Image generation failed.";
         }
@@ -187,7 +188,25 @@ generateBtn.addEventListener("click", async (e) => {
 });
 
 // =================== STORAGE ===================
-function StoreInLocalStore() {
+// function StoreInLocalStore() {
+//     const charData = {
+//         name: document.getElementById("charName").value || "Unknown",
+//         age: document.getElementById("charAge").value || "Unknown",
+//         gender: document.getElementById("charGender").value || "Unspecified",
+//         hair: document.getElementById("charHair").value || "Unspecified",
+//         eyes: document.getElementById("charEyes").value || "Unspecified",
+//         clothes: document.getElementById("charClothes").value || "Unspecified",
+//         special: document.getElementById("charSpecial").value || "None",
+//         description: storyTextArea.value || "No story provided",
+//         createdAt: new Date().toLocaleString(),
+//     };
+
+//     const history = JSON.parse(localStorage.getItem("characterHistory")) || [];
+//     history.push(charData);
+//     localStorage.setItem("characterHistory", JSON.stringify(history));
+// }
+// =================== STORAGE ===================
+async function saveHistoryToBackend() {
     const charData = {
         name: document.getElementById("charName").value || "Unknown",
         age: document.getElementById("charAge").value || "Unknown",
@@ -196,14 +215,24 @@ function StoreInLocalStore() {
         eyes: document.getElementById("charEyes").value || "Unspecified",
         clothes: document.getElementById("charClothes").value || "Unspecified",
         special: document.getElementById("charSpecial").value || "None",
-        description: storyTextArea.value || "No story provided",
-        createdAt: new Date().toLocaleString(),
+        description: document.getElementById("charStory").value || "No story provided"
     };
 
-    const history = JSON.parse(localStorage.getItem("characterHistory")) || [];
-    history.push(charData);
-    localStorage.setItem("characterHistory", JSON.stringify(history));
+    try {
+        const res = await fetch("/api/save-history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(charData)
+        });
+
+        const result = await res.json();
+        console.log("History save result:", result.message);
+    } catch (err) {
+        console.error("Error saving character history:", err);
+    }
 }
+
 
 // =================== PDF DOWNLOAD / SAVE ===================
 async function downloadImagesAsPDF(e, action) {
@@ -286,7 +315,7 @@ async function previewGenerateImage() {
     }
     
     const prompt = "A character " + traits.join(", ") + ".";
-    const epochs = 12;
+    const epochs = 1;
     document.getElementById("imagePreview").textContent = "Generating preview...";
 
     try {
