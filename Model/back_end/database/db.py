@@ -388,3 +388,50 @@ async def update_profile(
 
     await db.commit()
     return {"message": "Profile updated successfully"}
+
+
+
+# API for admin to fetch users
+@router.get("/api/admin/users")
+async def get_all_users(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(DBUser))
+    users = result.scalars().all()
+
+    response = []
+    for user in users:
+        comic_result = await db.execute(select(Comic).where(Comic.user_id == user.user_id))
+        comics_count = len(comic_result.scalars().all())
+
+        response.append({
+            "user_id": user.user_id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "role": user.role,
+            "credits": user.credits,
+            "comics_count": comics_count
+        })
+    return response
+
+
+@router.delete("/api/admin/users/{user_id}")
+async def delete_user_as_admin(user_id: int, db: AsyncSession = Depends(get_db)):
+    comic_result = await db.execute(select(Comic).where(Comic.user_id == user_id))
+    comics = comic_result.scalars().all()
+    for comic in comics:
+        file_path = os.path.join(FRONTEND_DIR, comic.images_path.lstrip("/"))
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                print(f"Error deleting file {file_path}: {e}")
+        await db.delete(comic)
+
+    user_result = await db.execute(select(DBUser).where(DBUser.user_id == user_id))
+    user = user_result.scalar_one_or_none()
+    if user:
+        await db.delete(user)
+        await db.commit()
+        return {"message": "User and comics deleted"}
+    else:
+        raise HTTPException(status_code=404, detail="User not found")

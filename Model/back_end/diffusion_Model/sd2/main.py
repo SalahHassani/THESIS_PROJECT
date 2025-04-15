@@ -88,6 +88,8 @@ def generate_image(prompt: str, image_type: str = "guest_user_images", count: in
     # Comment to disable image to image
     if inpaint:
         input_image = Image.open(os.path.join(PREVIEW_IMAGE_DIR, "preview_1.png"))
+    else:
+        clear_folder(PREVIEW_IMAGE_DIR)
 
 
     # 🧠 Expand only for registered users

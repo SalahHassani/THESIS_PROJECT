@@ -85,6 +85,10 @@ async def serve_index():
     with open(INDEX_HTML_PATH, "r") as f:
         return HTMLResponse(content=f.read())
 
+@app.get("/admin", response_class=HTMLResponse)
+async def serve_admin(request: Request):
+    return serve_protected_page(os.path.join(FRONTEND_DIR, "admin", "admin.html"), request)
+
 # Protected pages
 @app.get("/user", response_class=HTMLResponse)
 async def serve_user(request: Request):
@@ -142,15 +146,29 @@ async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     return response
 
 # Login
+# @app.post("/api/login")
+# async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
+#     result = await db.execute(select(User).where(User.email == user_data.email))
+#     user = result.scalars().first()
+#     if not user or not verify_password(user_data.password, user.password):
+#         raise HTTPException(status_code=401, detail="Invalid credentials")
+#     logger.info(f"Login successful for user: {user.email}")
+#     token = create_access_token(data={"sub": user.email})
+#     response = JSONResponse(content={"message": "Login successful"})
+#     response.set_cookie(key="access_token", value=token, httponly=True, samesite="Lax")
+#     return response
 @app.post("/api/login")
 async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == user_data.email))
     user = result.scalars().first()
     if not user or not verify_password(user_data.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    logger.info(f"Login successful for user: {user.email}")
+
     token = create_access_token(data={"sub": user.email})
-    response = JSONResponse(content={"message": "Login successful"})
+    response = RedirectResponse(
+        url="/admin" if user.role == "Admin" else "/user",
+        status_code=303
+    )
     response.set_cookie(key="access_token", value=token, httponly=True, samesite="Lax")
     return response
 

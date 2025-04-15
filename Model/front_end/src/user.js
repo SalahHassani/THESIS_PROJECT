@@ -286,7 +286,7 @@ async function previewGenerateImage() {
     }
     
     const prompt = "A character " + traits.join(", ") + ".";
-    const epochs = 2;
+    const epochs = 12;
     document.getElementById("imagePreview").textContent = "Generating preview...";
 
     try {

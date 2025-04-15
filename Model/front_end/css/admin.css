@@ -1,0 +1,122 @@
+/* ================= Admin Panel ================== */
+
+/* Main Container */
+.admin-container {
+  max-width: 1100px;
+  margin: 100px auto 40px;
+  padding: 20px;
+  background-color: var(--color-sidebar-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  position: relative;
+}
+
+/* Admin Header */
+.admin-container h1 {
+  color: var(--color-text);
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+/* ================= Logout Button ================== */
+
+.admin-logout {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  z-index: 100;
+}
+
+.admin-logout button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: var(--color-button-bg);
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admin-logout button:hover {
+  background: var(--gradient-tertiary);
+}
+
+.admin-logout i {
+  font-size: 16px;
+}
+
+/* ================= User Table ================== */
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-nav-bg);
+  color: var(--color-text);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.user-table thead {
+  background: var(--gradient-tertiary);
+}
+
+.user-table th,
+.user-table td {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 15px;
+  border-bottom: 1px solid var(--color-input-border);
+  white-space: nowrap;
+}
+
+.user-table tbody tr:hover {
+  background-color: var(--color-input-bg);
+}
+
+/* Delete Button in Table */
+.user-table .delete-btn {
+  padding: 6px 12px;
+  background-color: var(--color-tertiary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.user-table .delete-btn:hover {
+  background-color: var(--color-tertiary-darker);
+}
+
+/* ================= Responsive Fix ================== */
+
+@media (max-width: 768px) {
+  .admin-container {
+    margin: 100px 10px 40px;
+    padding: 16px;
+  }
+
+  .user-table th,
+  .user-table td {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .admin-logout {
+    top: 20px;
+    right: 20px;
+  }
+
+  .admin-logout button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <script src="https://kit.fontawesome.com/c08e825cd8.js" crossorigin="anonymous"></script>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/defaults.css" />
+  <link rel="stylesheet" href="../css/admin.css" />
+</head>
+
+<body>
+  <!-- Theme Toggle Button -->
+  <div class="theme-toggle" id="toggleTheme">
+    <div class="toggle-thumb">
+      <i class="fas fa-sun icon-toggle-btn"></i>
+      <i class="fas fa-moon icon-toggle-btn"></i>
+    </div>
+  </div>
+
+  <!-- Logout Button -->
+  <div class="admin-logout">
+    <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <main class="admin-container">
+    <h1>Admin Dashboard</h1>
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Credits</th>
+          <th>Comics</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody">
+        <!-- JS will populate this -->
+      </tbody>
+    </table>
+  </main>
+
+  <div class="overlay2 hidden"></div>
+
+  <script src="../src/nav.js"></script>
+  <script src="../src/admin.js"></script>
+</body>
+
+</html>
