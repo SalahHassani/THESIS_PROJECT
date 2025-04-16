@@ -1,3 +1,8 @@
+"use strict";
+
+// ======================
+// 🎨 Theme Toggle
+// ======================
 const toggle = document.getElementById("toggleTheme");
 
 const lightColors = {
@@ -32,20 +37,12 @@ const darkColors = {
   "--color-toggle-text": "#000000"
 };
 
-const navBar = document.querySelector('nav');
-const menuBtns = document.querySelectorAll('.menu-item');
-const overlay2 = document.querySelector('.overlay2');
-
-menuBtns.forEach((btn) => btn.addEventListener('click', () => navBar.classList.toggle('open')));
-overlay2.addEventListener('click', () => navBar.classList.remove('open'));
-
 function setColors(themeObj) {
   for (const [key, value] of Object.entries(themeObj)) {
     document.documentElement.style.setProperty(key, value);
   }
 }
 
-// Restore saved theme
 const saved = localStorage.getItem("theme-toggle");
 if (saved === "light") {
   toggle.classList.add("active");
@@ -55,18 +52,28 @@ if (saved === "light") {
 toggle.addEventListener("click", () => {
   toggle.classList.toggle("active");
   const isLight = toggle.classList.contains("active");
-
   isLight ? setColors(lightColors) : setColors(darkColors);
   localStorage.setItem("theme-toggle", isLight ? "light" : "dark");
 });
 
+// ======================
+// 📱 Navbar Slide Toggle
+// ======================
+const navBar = document.querySelector("nav");
+const menuBtns = document.querySelectorAll(".menu-item");
+const overlay2 = document.querySelector(".overlay2");
 
-// Secure Logout Function
+menuBtns.forEach((btn) => btn.addEventListener("click", () => navBar.classList.toggle("open")));
+overlay2.addEventListener("click", () => navBar.classList.remove("open"));
+
+// ======================
+// 🔓 Secure Logout
+// ======================
 async function logoutUser() {
   try {
     const response = await fetch("/api/logout", {
       method: "POST",
-      credentials: "include", // ensure cookies are sent
+      credentials: "include"
     });
 
     if (response.ok) {
@@ -81,7 +88,6 @@ async function logoutUser() {
   }
 }
 
-// Example: Attach to a logout button
 document.querySelector("#logout-btn")?.addEventListener("click", (e) => {
   e.preventDefault();
   logoutUser();

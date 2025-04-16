@@ -1,11 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, Numeric, Date, TIMESTAMP, CheckConstraint, desc
-
+from sqlalchemy import (
+    Column, Integer, String, ForeignKey, Text, Numeric,
+    Date, TIMESTAMP, CheckConstraint
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
 Base = declarative_base()
 
+# ======================
+# 👤 User Model
+# ======================
 class User(Base):
     __tablename__ = "users"
 
@@ -23,9 +28,11 @@ class User(Base):
 
     comics = relationship("Comic", back_populates="user", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="user", cascade="all, delete-orphan")
-    # admin = relationship("Admin", uselist=False, back_populates="user", cascade="all, delete-orphan")
-    history = relationship("CharacterHistory", back_populates="user", cascade="all, delete-orphan")  # ⬆ Add this
+    history = relationship("CharacterHistory", back_populates="user", cascade="all, delete-orphan")
 
+# ======================
+# 📚 Comic Model
+# ======================
 class Comic(Base):
     __tablename__ = "comics"
 
@@ -43,6 +50,9 @@ class Comic(Base):
 
     user = relationship("User", back_populates="comics")
 
+# ======================
+# 💳 Payment Model
+# ======================
 class Payment(Base):
     __tablename__ = "payments"
 
@@ -60,19 +70,10 @@ class Payment(Base):
 
     user = relationship("User", back_populates="payments")
 
-# class Admin(Base):
-#     __tablename__ = "admins"
-
-#     admin_id = Column(Integer, primary_key=True, index=True)
-#     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), unique=True, nullable=False)
-#     permissions = Column(Text, nullable=False)
-#     created_at = Column(Date, default=datetime.utcnow)
-
-#     user = relationship("User", back_populates="admin")
-
-
-
-class CharacterHistory(Base):  # ⬆ New table for search history
+# ======================
+# 🧠 Character History Model
+# ======================
+class CharacterHistory(Base):
     __tablename__ = "character_history"
 
     id = Column(Integer, primary_key=True, index=True)

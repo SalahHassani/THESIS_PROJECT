@@ -1,5 +1,8 @@
 from pydantic import BaseModel, EmailStr
 
+# ======================
+# 📝 Auth Schemas
+# ======================
 class UserRegister(BaseModel):
     firstname: str
     lastname: str
@@ -10,6 +13,9 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+# ======================
+# 👤 User Profile
+# ======================
 class UserResponse(BaseModel):
     user_id: int
     email: EmailStr
@@ -19,7 +25,7 @@ class UserResponse(BaseModel):
     credits: int
 
     class Config:
-        orm_mode = True  # 👈 this is required for `.from_orm()`
+        orm_mode = True
 
 class ProfileUpdateRequest(BaseModel):
     new_name: str | None = None
@@ -28,7 +34,10 @@ class ProfileUpdateRequest(BaseModel):
     current_password: str | None = None
     new_password: str | None = None
 
-class CharacterData(BaseModel):  # ⬆ New schema for character history
+# ======================
+# 🧠 Character History
+# ======================
+class CharacterData(BaseModel):
     name: str
     age: str
     gender: str

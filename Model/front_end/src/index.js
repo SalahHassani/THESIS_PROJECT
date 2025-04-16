@@ -24,7 +24,7 @@ let shapesArray = document.querySelectorAll(".image-shape-btn:not(.active)");
 let activeShape = document.querySelector("#shape-row .active");
 
 // ======================
-// 🧠 Modal & Form Utils
+// 🔐 Modal & Form Utils
 // ======================
 function openSignInForm(e) {
   e.preventDefault();
@@ -69,7 +69,7 @@ function loadImages(url) {
 }
 
 // ======================
-// 📸 Handle Shape Change
+// 📐 Handle Shape Change
 // ======================
 imageShapeRow.addEventListener("click", (e) => {
   e.preventDefault();
@@ -91,12 +91,11 @@ generateBtn.addEventListener("click", async () => {
   const text = textArea.value.trim();
   if (!text) return alert("Please enter some text!");
 
-  console.log("📤 Generating image for:", text);
   try {
     const res = await fetch("/api/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, type: "guest_user_images", count: 1, epochs: 2, inPainting: false}),
+      body: JSON.stringify({ text, type: "guest_user_images", count: 1, epochs: 2, inPainting: false }),
     });
 
     const data = await res.json();
@@ -111,7 +110,7 @@ generateBtn.addEventListener("click", async () => {
 });
 
 // ======================
-// 🔐 Register
+// 📝 Register
 // ======================
 registerBtn.addEventListener("click", async (e) => {
   e.preventDefault();
@@ -149,7 +148,7 @@ registerBtn.addEventListener("click", async (e) => {
 });
 
 // ======================
-// 🔐 Login
+// 🔓 Login
 // ======================
 loginBtn.addEventListener("click", async () => {
   const email = document.querySelector(".signInForm input[type='text']").value;
@@ -161,7 +160,7 @@ loginBtn.addEventListener("click", async () => {
     const res = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // IMPORTANT: send cookies
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -169,7 +168,7 @@ loginBtn.addEventListener("click", async () => {
     if (!res.ok) throw new Error(data.detail || "Login failed.");
 
     alert("✅ Login successful!");
-    window.location.href = "/user"; // Token is stored in cookie
+    window.location.href = data.redirect_url;
   } catch (err) {
     console.error("❌ Login error:", err.message);
     alert("Login failed. Please check credentials.");

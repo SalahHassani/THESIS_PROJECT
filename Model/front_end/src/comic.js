@@ -1,16 +1,20 @@
 "use strict";
 
-// =================== DOM References ===================
+// ======================
+// 📚 DOM References
+// ======================
 const comicList = document.getElementById("comicList");
 
-// =================== Load Comics ===================
+// ======================
+// 📥 Load Comics
+// ======================
 async function loadComicsFromServer() {
     comicList.innerHTML = "Loading comics...";
 
     try {
         const response = await fetch("/api/user/comics", {
             method: "GET",
-            credentials: "include" // ✅ Send cookie for auth
+            credentials: "include"
         });
 
         const comics = await response.json();
@@ -40,7 +44,9 @@ async function loadComicsFromServer() {
     }
 }
 
-// =================== Helpers ===================
+// ======================
+// 🔎 Helpers
+// ======================
 async function checkImageExists(url) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -71,14 +77,16 @@ function renderComicCard(comic, thumbnailSrc) {
     comicList.appendChild(card);
 }
 
-// =================== Delete Comic ===================
+// ======================
+// 🗑️ Delete Comic
+// ======================
 async function deleteComic(comicId) {
     if (!confirm("Delete this comic permanently?")) return;
 
     try {
         const response = await fetch(`/api/user/comics/${comicId}`, {
             method: "DELETE",
-            credentials: "include" // ✅ Send auth cookie
+            credentials: "include"
         });
 
         if (response.ok) {
@@ -93,14 +101,16 @@ async function deleteComic(comicId) {
     }
 }
 
-// =================== Clear All ===================
+// ======================
+// 🧹 Clear All Comics
+// ======================
 async function clearAllComics() {
     if (!confirm("Are you sure you want to delete ALL your comics? This cannot be undone.")) return;
 
     try {
         const response = await fetch("/api/user/comics", {
             method: "DELETE",
-            credentials: "include" // ✅ Send auth cookie
+            credentials: "include"
         });
 
         if (response.ok) {
@@ -115,5 +125,7 @@ async function clearAllComics() {
     }
 }
 
-// =================== Init ===================
+// ======================
+// 🚀 Init
+// ======================
 window.addEventListener("DOMContentLoaded", loadComicsFromServer);

@@ -9,32 +9,41 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 
-
-
-# Internal imports
+# ======================
+# 📦 Internal Imports
+# ======================
 from back_end.database.db import get_db
 from back_end.database.models import User
 from back_end.database.schemas import UserLogin, UserRegister
-from back_end.database.auth import verify_password, create_access_token, hash_password, SECRET_KEY, ALGORITHM
+from back_end.database.auth import (
+    verify_password, create_access_token, hash_password, SECRET_KEY, ALGORITHM
+)
 from back_end.database.db import router as db_router
 from back_end.diffusion_Model.sd2 import main
 
-
-# Paths
+# ======================
+# 🛠️ Path Setup
+# ======================
 BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(BACKEND_DIR, "front_end")
 SD2_DIR = os.path.join(BACKEND_DIR, "back_end", "diffusion_Model", "sd2")
 USER_HTML_PATH = os.path.join(FRONTEND_DIR, "user", "user.html")
 INDEX_HTML_PATH = os.path.join(FRONTEND_DIR, "index.html")
 
-# Logger
+if SD2_DIR not in sys.path:
+    sys.path.append(SD2_DIR)
+
+# ======================
+# 🧪 Logger
+# ======================
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Token checker
+# ======================
+# 🔐 Token Verification
+# ======================
 def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -42,16 +51,15 @@ def verify_token(token: str):
     except JWTError:
         return None
 
-if SD2_DIR not in sys.path:
-    sys.path.append(SD2_DIR)
-
-# FastAPI app
+# ======================
+# 🚀 FastAPI Setup
+# ======================
 app = FastAPI()
-
 app.include_router(db_router)
 
-
-# CORS
+# ======================
+# 🌐 CORS
+# ======================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -60,7 +68,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount frontend
+# ======================
+# 🧱 Static Mounts
+# ======================
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 app.mount("/images", StaticFiles(directory=os.path.join(FRONTEND_DIR, "images")), name="images")
 app.mount("/images/preview", StaticFiles(directory=os.path.join(FRONTEND_DIR, "images", "preview")), name="preview")
@@ -70,7 +80,9 @@ app.mount("/src", StaticFiles(directory=os.path.join(FRONTEND_DIR, "src")), name
 app.mount("/css", StaticFiles(directory=os.path.join(FRONTEND_DIR, "css")), name="css")
 app.mount("/uploads", StaticFiles(directory=os.path.join(FRONTEND_DIR, "uploads")), name="uploads")
 
-# Protected route wrapper
+# ======================
+# 🔒 Protected Page Wrapper
+# ======================
 def serve_protected_page(file_path: str, request: Request):
     token = request.cookies.get("access_token")
     email = verify_token(token) if token else None
@@ -79,17 +91,24 @@ def serve_protected_page(file_path: str, request: Request):
     with open(file_path, "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
 
-# Public route
+# ======================
+# 🏠 Public Route
+# ======================
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
     with open(INDEX_HTML_PATH, "r") as f:
         return HTMLResponse(content=f.read())
 
+# ======================
+# 👤 Admin Page
+# ======================
 @app.get("/admin", response_class=HTMLResponse)
 async def serve_admin(request: Request):
     return serve_protected_page(os.path.join(FRONTEND_DIR, "admin", "admin.html"), request)
 
-# Protected pages
+# ======================
+# 🛡️ User-Protected Pages
+# ======================
 @app.get("/user", response_class=HTMLResponse)
 async def serve_user(request: Request):
     return serve_protected_page(USER_HTML_PATH, request)
@@ -110,7 +129,9 @@ async def serve_history(request: Request):
 async def serve_settings(request: Request):
     return serve_protected_page(os.path.join(FRONTEND_DIR, "user", "settings.html"), request)
 
-# Generate image
+# ======================
+# 🎨 Image Generation API
+# ======================
 @app.post("/api/generate-image")
 async def generate_image(request: Request):
     data = await request.json()
@@ -125,7 +146,9 @@ async def generate_image(request: Request):
     images = main.generate_image(prompt, image_type, count, epochs, inpaint)
     return {"message": f"{len(images)} image(s) generated successfully", "image_paths": images}
 
-# Register
+# ======================
+# ✍️ Register API
+# ======================
 @app.post("/api/register")
 async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     logger.info("Registering new user...")
@@ -145,18 +168,9 @@ async def register(user_data: UserRegister, db: AsyncSession = Depends(get_db)):
     response.set_cookie(key="access_token", value=token, httponly=True, samesite="Lax")
     return response
 
-# Login
-# @app.post("/api/login")
-# async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
-#     result = await db.execute(select(User).where(User.email == user_data.email))
-#     user = result.scalars().first()
-#     if not user or not verify_password(user_data.password, user.password):
-#         raise HTTPException(status_code=401, detail="Invalid credentials")
-#     logger.info(f"Login successful for user: {user.email}")
-#     token = create_access_token(data={"sub": user.email})
-#     response = JSONResponse(content={"message": "Login successful"})
-#     response.set_cookie(key="access_token", value=token, httponly=True, samesite="Lax")
-#     return response
+# ======================
+# 🔐 Login API
+# ======================
 @app.post("/api/login")
 async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == user_data.email))
@@ -165,24 +179,24 @@ async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_access_token(data={"sub": user.email})
-    response = RedirectResponse(
-        url="/admin" if user.role == "Admin" else "/user",
-        status_code=303
-    )
+    response = JSONResponse(content={
+        "message": "Login successful",
+        "redirect_url": "/admin" if user.role == "Admin" else "/user"
+    })
     response.set_cookie(key="access_token", value=token, httponly=True, samesite="Lax")
     return response
 
-# Logout
+# ======================
+# 🚪 Logout API
+# ======================
 @app.post("/api/logout")
 async def logout():
     response = JSONResponse(content={"message": "Logged out"})
     response.delete_cookie("access_token")
     return response
 
-
-# Include other DB routes
-app.include_router(db_router)
-
-# Run app
+# ======================
+# 🚀 App Runner
+# ======================
 if __name__ == "__main__":
     uvicorn.run("app:app", host="127.0.0.1", port=8001, reload=True)

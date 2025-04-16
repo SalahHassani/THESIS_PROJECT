@@ -1,13 +1,15 @@
-// ========================
-// Profile Settings Script
-// ========================
+"use strict";
 
+// ======================
+// ⚙️ Profile Settings Script
+// ======================
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Profile settings script loaded.");
     const notify = (msg, isError = false) => alert(msg);
-
     const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
+    // ======================
+    // 🔁 Toggle Edit Sections
+    // ======================
     const toggleEdit = section => {
         const form = document.getElementById("edit" + capitalize(section));
         if (form) {
@@ -18,9 +20,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     };
 
-    // ======= Toggle Edit/Cancel Buttons =======
     ["name", "email", "password"].forEach(section => {
         const formId = "edit" + capitalize(section);
+
         document.querySelectorAll(".edit-btn").forEach(btn => {
             const group = btn.closest(".setting-group");
             if (group && group.nextElementSibling?.id === formId) {
@@ -35,7 +37,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });
 
-    // ======= Update Name =======
+    // ======================
+    // 📝 Update Name
+    // ======================
     document.querySelector("#editName .btn:not(.cancel-btn)")?.addEventListener("click", async () => {
         const nameInput = document.querySelector("#editName input").value.trim();
         if (!nameInput) return notify("Please enter a valid name.", true);
@@ -55,7 +59,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else notify(data.detail || "Failed to update name", true);
     });
 
-    // ======= Update Email =======
+    // ======================
+    // 📧 Update Email
+    // ======================
     document.querySelector("#editEmail .btn:not(.cancel-btn)")?.addEventListener("click", async () => {
         const inputs = document.querySelectorAll("#editEmail input");
         const current = inputs[0].value.trim();
@@ -80,7 +86,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else notify(data.detail || "Failed to update email", true);
     });
 
-    // ======= Update Password =======
+    // ======================
+    // 🔒 Update Password
+    // ======================
     document.querySelector("#editPassword .btn:not(.cancel-btn)")?.addEventListener("click", async () => {
         const inputs = document.querySelectorAll("#editPassword input");
         const current = inputs[0].value.trim();
@@ -104,7 +112,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else notify(data.detail || "Failed to update password", true);
     });
 
-    // ======= Delete Account =======
+    // ======================
+    // ❌ Delete Account
+    // ======================
     document.querySelector("#deleteAccountForm")?.addEventListener("submit", async e => {
         e.preventDefault();
 
@@ -129,7 +139,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // ======= Load User Info =======
+    // ======================
+    // 👤 Load User Info
+    // ======================
     try {
         const res = await fetch("/users/me", {
             method: "GET",
@@ -139,8 +151,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!res.ok) throw new Error("User fetch failed");
 
         const user = await res.json();
-        console.log("User profile loaded:", user);
         const fullName = `${user.first_name || ""} ${user.last_name || ""}`.trim();
+
         document.getElementById("currentName").textContent = fullName || "Unknown User";
         document.getElementById("currentEmail").textContent = user.email || "unknown@example.com";
     } catch (err) {
