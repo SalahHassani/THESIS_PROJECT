@@ -37,6 +37,8 @@ const previewApplyBtn = document.querySelector(".preview-apply-btn");
 
 const epochsSlider = document.querySelector(".epochs-slider");
 const epochsValue = document.getElementById("epochsValue");
+const emailImagesBtn = document.querySelector(".email-images-btn");
+
 
 let currentIndex = 0;
 let imageCount = 4;
@@ -91,6 +93,7 @@ imageShapeRow.addEventListener('click', (e) => {
 // 🖼️ Image Loading
 // ======================
 function loadImages() {
+  imageCount = 1;
   for (let i = 1; i <= imageCount; i++) {
     const img = new Image();
     img.src = `${imagesPath}${i}.png`;
@@ -254,7 +257,12 @@ async function downloadImagesAsPDF(e, action) {
 
   if (action === "download") {
     pdf.save("images.pdf");
-  } else if (action === "saveToDB") {
+  }
+  else if (action === "sendEmail") {
+    const pdfBlob = pdf.output("blob");
+    sendPDFByEmail(pdfBlob);
+  }
+   else if (action === "saveToDB") {
     const formData = new FormData();
     formData.append("pdf", pdf.output("blob"), "images.pdf");
     formData.append("title", "My Comic Title");
@@ -362,6 +370,7 @@ MyEvents("click", saveBtn, (e) => {
 MyEvents("click", clearBtn, cleanImageSection);
 MyEvents("click", downloadImagesBtn, (e) => downloadImagesAsPDF(e, "download"));
 MyEvents("click", saveImagesBtn, (e) => downloadImagesAsPDF(e, "saveToDB"));
+MyEvents("click", emailImagesBtn, (e) => downloadImagesAsPDF(e, "sendEmail"));
 MyEvents("click", previewGenBtn, previewGenerateImage);
 
 epochsSlider.addEventListener("input", () => {
@@ -374,3 +383,27 @@ previewApplyBtn.addEventListener("click", (e) => {
   inPainting = true;
   alert("Inpainting: " + inPainting);
 });
+
+
+async function sendPDFByEmail(pdfBlob) {
+  const formData = new FormData();
+  formData.append("pdf", pdfBlob, "images.pdf");
+
+  try {
+    const res = await fetch("/send-email", {
+      method: "POST",
+      body: formData,
+      credentials: "include"   // lets FastAPI resolve the user from the session/JWT
+    });
+
+    const { message, error } = await res.json();
+    alert(res.ok ? `${message || "Email sent!"}` : `${error || "Error sending email."}`);
+  } catch (err) {
+    console.error("Email send error:", err);
+    alert("Something went wrong while sending the email.");
+  }
+
+  closeModal();
+}
+
+

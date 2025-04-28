@@ -187,22 +187,28 @@ async def upload_pdf(
 # ======================
 # 📚 Comic Management
 # ======================
-@router.get("/api/user/comics")
+from typing import List
+from back_end.database.schemas import ComicResponse
+
+@router.get("/api/user/comics", response_model=List[ComicResponse])
 async def get_user_comics(
     db: AsyncSession = Depends(get_db),
     current_user: DBUser = Depends(get_current_user)
 ):
     result = await db.execute(select(Comic).where(Comic.user_id == current_user.user_id))
+    comics = result.scalars().all()
+
     return [
-        {
-            "id": comic.comic_id,
-            "title": comic.title,
-            "description": comic.story_text,
-            "pdf_path": comic.images_path,
-            "created_at": str(comic.created_at)
-        }
-        for comic in result.scalars().all()
+        ComicResponse(
+            id=comic.comic_id,
+            title=comic.title,
+            description=comic.story_text,
+            pdf_path=comic.images_path,
+            created_at=comic.created_at
+        )
+        for comic in comics
     ]
+
 
 @router.delete("/api/user/comics/{comic_id}")
 async def delete_comic(
@@ -393,3 +399,77 @@ async def clear_all_history(
 
     await db.commit()
     return {"message": "All history cleared"}
+
+
+# ============================================================
+# 📧  Send the generated comic to the *current* user by e-mail
+# ============================================================
+import smtplib
+from email.message import EmailMessage
+from fastapi import BackgroundTasks, UploadFile, File, HTTPException, Depends
+
+# -- Gmail SMTP settings
+SMTP_HOST = "smtp.gmail.com"
+SMTP_PORT = 465                   
+SMTP_USER = "mywork9008@gmail.com"
+SMTP_PASS = "lkzr rdbn nuzc pssd"    
+
+def _send_comic_email(to_addr: str,
+                      pdf_bytes: bytes,
+                      filename: str,
+                      user_fullname: str) -> None:
+    """
+    Background task: build and send the e-mail with the comic attached.
+    Runs in a thread, so any exception is logged but won’t crash FastAPI.
+    """
+    try:
+        msg = EmailMessage()
+        msg["Subject"] = "Your generated comic"
+        msg["From"] = f"SHassani <{SMTP_USER}>"
+        msg["Reply-To"] = f"{user_fullname} <{to_addr}>"
+        msg["To"] = to_addr
+
+        msg.set_content(
+            "Hi!\n\nHere’s the comic you just generated on SHassani.\n\nEnjoy!\n"
+        )
+
+        msg.add_attachment(
+            pdf_bytes,
+            maintype="application",
+            subtype="pdf",
+            filename=filename
+        )
+
+        with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as smtp:
+            smtp.login(SMTP_USER, SMTP_PASS)
+            smtp.send_message(msg)
+
+    except Exception as exc:  # noqa: BLE001
+        print(f"[EMAIL ERROR] Failed to send e-mail to {to_addr}: {exc}")
+
+@router.post("/send-email")
+async def send_email_endpoint(
+    background_tasks: BackgroundTasks,
+    pdf: UploadFile = File(...),
+    current_user: DBUser = Depends(get_current_user)
+):
+    """
+    Receives the uploaded PDF from the front-end and schedules the
+    background e-mail task.  Returns immediately with a JSON status.
+    """
+    if not pdf.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
+
+    pdf_bytes = await pdf.read()
+    filename = pdf.filename or "comic.pdf"
+    user_fullname = f"{current_user.first_name} {current_user.last_name}".strip() or current_user.email
+
+    background_tasks.add_task(
+        _send_comic_email,
+        current_user.email,
+        pdf_bytes,
+        filename,
+        user_fullname
+    )
+
+    return {"message": f"Comic is being e-mailed to {current_user.email}"}

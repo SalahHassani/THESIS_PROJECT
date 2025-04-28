@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
 # ======================
 # 📝 Auth Schemas
@@ -46,3 +47,13 @@ class CharacterData(BaseModel):
     clothes: str
     special: str
     description: str
+
+class ComicResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    pdf_path: str
+    created_at: datetime
+
+    class Config:
+        orm_mode = True

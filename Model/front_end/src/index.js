@@ -95,7 +95,7 @@ generateBtn.addEventListener("click", async () => {
     const res = await fetch("/api/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, type: "guest_user_images", count: 1, epochs: 2, inPainting: false }),
+      body: JSON.stringify({ text, type: "guest_user_images", count: 1, epochs: 30, inPainting: false }),
     });
 
     const data = await res.json();
@@ -195,3 +195,6 @@ function MyEvents(event, element, callback) {
 MyEvents("click", close, closeModal);
 MyEvents("click", overlay, closeModal);
 MyEvents("keydown", document, closeModalOnEsc);
+
+
+

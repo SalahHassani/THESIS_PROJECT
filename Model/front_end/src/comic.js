@@ -4,18 +4,23 @@
 // 📚 DOM References
 // ======================
 const comicList = document.getElementById("comicList");
+alert("Loading comics... ");
 
 // ======================
 // 📥 Load Comics
 // ======================
 async function loadComicsFromServer() {
-    comicList.innerHTML = "Loading comics...";
+    alert("Loading comics... ");
+    console.log("🔄 Loading comics...");
+    comicList.innerHTML = "<p>Loading comics...</p>";
 
     try {
         const response = await fetch("/api/user/comics", {
             method: "GET",
             credentials: "include"
         });
+
+        if (!response.ok) throw new Error("Failed to load comics");
 
         const comics = await response.json();
 
@@ -36,10 +41,14 @@ async function loadComicsFromServer() {
             const thumbSrc = await checkImageExists(thumbPath) ? thumbPath : fallbackThumb;
 
             renderComicCard(comic, thumbSrc);
+
+            console.log("Comics loaded into UI");
+            alert("This alert proves script is running");
+
         }
 
     } catch (err) {
-        console.error("Error loading comics:", err);
+        console.error("❌ Error loading comics:", err);
         comicList.innerHTML = "<p>Error loading comics.</p>";
     }
 }
@@ -57,8 +66,10 @@ async function checkImageExists(url) {
 }
 
 function renderComicCard(comic, thumbnailSrc) {
+    alert("Rendering comic card... ");
     const card = document.createElement("div");
     card.className = "comic-card";
+    card.dataset.comicId = comic.id;
 
     card.innerHTML = `
         <a href="${comic.pdf_path}" target="_blank">
@@ -66,10 +77,10 @@ function renderComicCard(comic, thumbnailSrc) {
         </a>
         <div class="comic-info">
             <div class="comic-title">${comic.title}</div>
-            <div class="comic-description">${comic.story_text}</div>
+            <div class="comic-description">${comic.description}</div>
             <div class="card-actions">
                 <a class="btn btn-download" href="${comic.pdf_path}" download>Download</a>
-                <button class="btn btn-delete" onclick="deleteComic(${comic.comic_id})">Delete</button>
+                <button class="btn btn-delete">Delete</button>
             </div>
         </div>
     `;
@@ -90,42 +101,26 @@ async function deleteComic(comicId) {
         });
 
         if (response.ok) {
-            alert("Comic deleted.");
+            alert("✅ Comic deleted.");
             loadComicsFromServer();
         } else {
             const error = await response.json();
-            alert("Failed to delete: " + error.detail);
+            alert("❌ Failed to delete: " + error.detail);
         }
     } catch (err) {
-        console.error("Delete error:", err);
+        console.error("❌ Delete error:", err);
     }
 }
 
 // ======================
-// 🧹 Clear All Comics
+// 🔗 Event Delegation for Buttons
 // ======================
-async function clearAllComics() {
-    if (!confirm("Are you sure you want to delete ALL your comics? This cannot be undone.")) return;
-
-    try {
-        const response = await fetch("/api/user/comics", {
-            method: "DELETE",
-            credentials: "include"
-        });
-
-        if (response.ok) {
-            alert("All comics deleted.");
-            loadComicsFromServer();
-        } else {
-            const error = await response.json();
-            alert("Failed to clear all: " + error.detail);
-        }
-    } catch (err) {
-        console.error("Clear error:", err);
+comicList.addEventListener("click", (event) => {
+    if (event.target.classList.contains("btn-delete")) {
+        const card = event.target.closest(".comic-card");
+        const comicId = card?.dataset?.comicId;
+        if (comicId) deleteComic(comicId);
     }
-}
+});
 
-// ======================
-// 🚀 Init
-// ======================
-window.addEventListener("DOMContentLoaded", loadComicsFromServer);
+loadComicsFromServer();
