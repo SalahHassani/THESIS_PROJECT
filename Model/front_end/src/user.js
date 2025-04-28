@@ -92,16 +92,27 @@ imageShapeRow.addEventListener('click', (e) => {
 // ======================
 // 🖼️ Image Loading
 // ======================
+// function loadImages() {
+//   for (let i = 1; i <= imageCount; i++) {
+//     const img = new Image();
+//     img.src = `${imagesPath}${i}.png`;
+//     img.alt = `Image ${i}`;
+//     img.classList.add("slide", `slide-${i}`);
+//     img.onload = () => imageSlider.appendChild(img);
+//   }
+// }
+
 function loadImages() {
-  imageCount = 1;
   for (let i = 1; i <= imageCount; i++) {
     const img = new Image();
     img.src = `${imagesPath}${i}.png`;
     img.alt = `Image ${i}`;
     img.classList.add("slide", `slide-${i}`);
-    img.onload = () => imageSlider.appendChild(img);
+
+    imageSlider.appendChild(img);
   }
 }
+
 
 function createDots() {
   dotsContainer.innerHTML = "";

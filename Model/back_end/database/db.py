@@ -210,6 +210,7 @@ async def get_user_comics(
     ]
 
 
+
 @router.delete("/api/user/comics/{comic_id}")
 async def delete_comic(
     comic_id: int,
@@ -224,12 +225,22 @@ async def delete_comic(
     if not comic:
         raise HTTPException(status_code=404, detail="Comic not found")
 
+    # Remove PDF
     pdf_path = os.path.join(FRONTEND_DIR, comic.images_path.lstrip("/"))
-    if os.path.exists(pdf_path): os.remove(pdf_path)
+    if os.path.exists(pdf_path):
+        os.remove(pdf_path)
+
+    # Remove Thumbnail
+    pdf_filename = os.path.basename(comic.images_path)
+    thumbnail_filename = pdf_filename.replace(".pdf", ".png")
+    thumbnail_path = os.path.join(FRONTEND_DIR, "uploads", "thumbnails", thumbnail_filename)
+    if os.path.exists(thumbnail_path):
+        os.remove(thumbnail_path)
 
     await db.delete(comic)
     await db.commit()
-    return {"message": "Comic deleted"}
+    return {"message": "Comic and thumbnail deleted successfully"}
+
 
 # ======================
 # 🧨 Delete Account
@@ -240,14 +251,27 @@ async def delete_account(
     current_user: DBUser = Depends(get_current_user)
 ):
     result = await db.execute(select(Comic).where(Comic.user_id == current_user.user_id))
-    for comic in result.scalars().all():
+    comics = result.scalars().all()
+
+    for comic in comics:
+        # Remove PDF
         file_path = os.path.join(FRONTEND_DIR, comic.images_path.lstrip("/"))
-        if os.path.exists(file_path): os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        # Remove Thumbnail
+        pdf_filename = os.path.basename(comic.images_path)
+        thumbnail_filename = pdf_filename.replace(".pdf", ".png")
+        thumbnail_path = os.path.join(FRONTEND_DIR, "uploads", "thumbnails", thumbnail_filename)
+        if os.path.exists(thumbnail_path):
+            os.remove(thumbnail_path)
+
         await db.delete(comic)
 
     await db.delete(current_user)
     await db.commit()
-    return {"message": "Account and all associated comics deleted successfully"}
+    return {"message": "Account and all associated comics and thumbnails deleted"}
+
 
 # ======================
 # ⚙️ Profile Update

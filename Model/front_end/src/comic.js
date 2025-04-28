@@ -4,13 +4,11 @@
 // 📚 DOM References
 // ======================
 const comicList = document.getElementById("comicList");
-alert("Loading comics... ");
 
 // ======================
 // 📥 Load Comics
 // ======================
 async function loadComicsFromServer() {
-    alert("Loading comics... ");
     console.log("🔄 Loading comics...");
     comicList.innerHTML = "<p>Loading comics...</p>";
 
@@ -41,10 +39,6 @@ async function loadComicsFromServer() {
             const thumbSrc = await checkImageExists(thumbPath) ? thumbPath : fallbackThumb;
 
             renderComicCard(comic, thumbSrc);
-
-            console.log("Comics loaded into UI");
-            alert("This alert proves script is running");
-
         }
 
     } catch (err) {
@@ -66,7 +60,6 @@ async function checkImageExists(url) {
 }
 
 function renderComicCard(comic, thumbnailSrc) {
-    alert("Rendering comic card... ");
     const card = document.createElement("div");
     card.className = "comic-card";
     card.dataset.comicId = comic.id;
@@ -101,11 +94,10 @@ async function deleteComic(comicId) {
         });
 
         if (response.ok) {
-            alert("✅ Comic deleted.");
             loadComicsFromServer();
         } else {
             const error = await response.json();
-            alert("❌ Failed to delete: " + error.detail);
+            console.error("❌ Failed to delete comic:", error.detail);
         }
     } catch (err) {
         console.error("❌ Delete error:", err);
