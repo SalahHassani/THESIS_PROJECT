@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
-    <link rel="stylesheet" href="../css/defaults.css">
-    <link rel="stylesheet" href="../css/user.css">
     <link rel="stylesheet" href="../css/settings.css">
-    <link rel="stylesheet" href="../css/generator.css">
+    <link rel="stylesheet" href="../css/generator.css" />
+    <link rel="stylesheet" href="../css/user.css" />
+    <link rel="stylesheet" href="../css/defaults.css" />
+
 
     <script src="https://kit.fontawesome.com/c08e825cd8.js" crossorigin="anonymous"></script>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -18,13 +19,17 @@
 
 <body>
 
+    
+
+
+
     <!-- ================= Left ================= -->
     <nav>
+
         <div class="logo">
             <i class='bx bx-menu menu-item'></i>
-            <span class="logo-name">SHassani</span>
+            <span class="logo-name" id="userFullName">SHassani</span>
         </div>
-
 
         <div class="theme-toggle" id="toggleTheme">
             <div class="toggle-thumb">
@@ -36,7 +41,7 @@
         <div class="sidebar">
             <div class="logo">
                 <i class='bx bx-menu menu-item'></i>
-                <span class="logo-name">SHassani</span>
+                <span class="logo-name" id="userFullName">SHassani</span>
             </div>
 
             <div class="sidebar-content">

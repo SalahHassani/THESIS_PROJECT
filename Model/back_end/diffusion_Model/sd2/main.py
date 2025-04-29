@@ -51,9 +51,13 @@ PREVIEW_IMAGE_DIR = os.path.abspath(os.path.join("..", "Model", "back_end", "dif
 # 🧼 FOLDER UTILITY
 # ==========================
 def clear_folder(folder_path):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path) 
     for file in os.listdir(folder_path):
-        if file.lower().endswith((".png", ".jpg", ".jpeg")):
-            os.remove(os.path.join(folder_path, file))
+        file_path = os.path.join(folder_path, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)  
+
 
 # ==========================
 # 🪄 PROMPT EXPANSION LOGIC

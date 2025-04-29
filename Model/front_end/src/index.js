@@ -91,6 +91,9 @@ generateBtn.addEventListener("click", async () => {
   const text = textArea.value.trim();
   if (!text) return alert("Please enter some text!");
 
+  middleItem.innerHTML = '<span class="loader"></span>';
+  middleItem.classList.remove("hidden");
+
   try {
     const res = await fetch("/api/generate-image", {
       method: "POST",

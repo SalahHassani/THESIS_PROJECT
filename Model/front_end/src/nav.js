@@ -92,3 +92,31 @@ document.querySelector("#logout-btn")?.addEventListener("click", (e) => {
   e.preventDefault();
   logoutUser();
 });
+
+
+async function updateNavbarWithUserFullName() {
+  try {
+      const response = await fetch('/users/me', {
+          method: 'GET',
+          credentials: 'include'
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to fetch user details.");
+      }
+
+      const user = await response.json();
+      const fullName = `${user.first_name} ${user.last_name}`;
+
+      document.querySelectorAll("#userFullName").forEach((element) => {
+          element.textContent = fullName;
+      });
+
+
+  } catch (error) {
+      console.error("Error fetching user details:", error);
+      // document.getElementById("userFullName").textContent = "User";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", updateNavbarWithUserFullName);

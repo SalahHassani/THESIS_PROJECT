@@ -1,8 +1,8 @@
 .comics-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* spacing between cards */
-    justify-content: center; /* center cards on wider screens */
+    gap: 20px;
+    justify-content: center;
     padding: 20px;
 }
 
@@ -34,24 +34,24 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background-color: var(--color-toggle-bg);
+    background-color: var(--color-toggle-bg) !important;
 }
 
 .comic-title {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--color-toggle-text);
 }
 
 .comic-description {
     font-size: 0.875rem;
-    color: var(--color-text);
+    color: var(--color-toggle-text);
 }
 
 .card-actions {
     display: flex;
     justify-content: space-between;
-    gap: 12px; /* this adds gap between the Download and Delete buttons */
+    gap: 12px;
     margin-top: auto;
 }
 
@@ -63,12 +63,13 @@
     cursor: pointer;
     font-weight: 500;
     font-size: 14px;
-    transition: background-color 0.2s ease;
 }
 
 .btn-download {
-    background-color: #4caf50;
+    background-image: var(--tertiary-color);
     color: white;
+    text-decoration: none;
+
 }
 
 .btn-delete {
@@ -78,4 +79,9 @@
 
 .btn:hover {
     opacity: 0.95;
+}
+
+.btn-delete:hover {
+    background: #d32f2f !important;
+    opacity: 0.95 !important;
 }
