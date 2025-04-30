@@ -77,10 +77,12 @@ async def serve_protected_page(file_path: str, request: Request, db: AsyncSessio
     email = verify_token(token) if token else None
     if not email:
         return RedirectResponse("/")
+
     result = await db.execute(select(User).where(User.email == email))
     user = result.scalar_one_or_none()
     if not user:
         return RedirectResponse("/")
+
     with open(file_path, "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
 
@@ -133,10 +135,29 @@ async def generate_image(request: Request):
     image_type = data.get("type", "guest_user_images")
     count = data.get("count", 1)
     epochs = data.get("epochs", 1)
-    inpaint = data.get("inPainting", False)
+    extended_prompt = data.get("extendedPrompt", "A comic character")
+    user_id = data.get("userId", "defaultUser")  # Ensure userId is part of the data
+    
     if not prompt:
         raise HTTPException(status_code=400, detail="No prompt provided.")
-    images = main.generate_image(prompt, image_type, count, epochs, inpaint)
+
+    # Dynamic path based on user ID
+    images_dir = os.path.join(FRONTEND_DIR, "images", str(user_id))  
+
+    if not os.path.exists(images_dir):
+        os.makedirs(images_dir)
+
+    # Create shassani and preview directories under the user's directory
+    shassani_dir = os.path.join(images_dir, "shassani")
+    preview_dir = os.path.join(images_dir, "preview")
+    
+    # Ensure these directories exist
+    os.makedirs(shassani_dir, exist_ok=True)
+    os.makedirs(preview_dir, exist_ok=True)
+
+    
+    
+    images = main.generate_image(prompt, image_type, count, epochs, extended_prompt, user_id)  # Pass the user-specific path
     return {"message": f"{len(images)} image(s) generated successfully", "image_paths": images}
 
 # =========================

@@ -39,11 +39,10 @@ const epochsSlider = document.querySelector(".epochs-slider");
 const epochsValue = document.getElementById("epochsValue");
 const emailImagesBtn = document.querySelector(".email-images-btn");
 
-
 let currentIndex = 0;
 let imageCount = 4;
-let inPainting = false;
-const imagesPath = "../images/shassani/shassani_";
+let extendedPrompt = "";
+let userId = "";  // This will be populated from the backend.
 epochsValue.textContent = epochsSlider.value;
 
 // ======================
@@ -92,27 +91,18 @@ imageShapeRow.addEventListener('click', (e) => {
 // ======================
 // 🖼️ Image Loading
 // ======================
-// function loadImages() {
-//   for (let i = 1; i <= imageCount; i++) {
-//     const img = new Image();
-//     img.src = `${imagesPath}${i}.png`;
-//     img.alt = `Image ${i}`;
-//     img.classList.add("slide", `slide-${i}`);
-//     img.onload = () => imageSlider.appendChild(img);
-//   }
-// }
 
 function loadImages() {
+  const imagesPath = `../images/${userId}/shassani/shassani_`; // Including userId in the path
+  
   for (let i = 1; i <= imageCount; i++) {
     const img = new Image();
-    img.src = `${imagesPath}${i}.png`;
+    img.src = `${imagesPath}${i}.png`;  // Full path including the userId
     img.alt = `Image ${i}`;
     img.classList.add("slide", `slide-${i}`);
-
     imageSlider.appendChild(img);
   }
 }
-
 
 function createDots() {
   dotsContainer.innerHTML = "";
@@ -169,30 +159,41 @@ generateBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   cleanImageSection(e);
 
-  const text = storyTextArea.value.trim();
+  const prompt = storyTextArea.value.trim();
   const epochs = parseInt(epochsSlider.value) || 1;
   imageCount = parseInt(imageCountInput.value) || 1;
 
-  if (!text) return alert("Please enter a story before generating images.");
+  if (!prompt) return alert("Please enter a story before generating images.");
   if (imageCount < 1 || imageCount > 10) return alert("Enter a valid image count (1–10).");
 
   middleItem.innerHTML = '<span class="loader"></span>';
   middleItem.classList.remove("hidden");
 
-  alert("Inpainting: " + inPainting);
+  
 
   try {
+    // Fetch userId before making the image generation request
+    const userResponse = await fetch("users/me", {
+      method: "GET",
+      credentials: "include"
+    });
+
+    alert("Full prompt (story + Extended Prompt): " + prompt + " => " + extendedPrompt);
+    
+    const userData = await userResponse.json();
+    userId = userData.user_id; // Get the user ID from the response
+
     const response = await fetch("/api/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ text, type: "shassani", count: imageCount, epochs, inPainting })
+      body: JSON.stringify({ text: prompt, type: "shassani", count: imageCount, epochs, extendedPrompt, userId }) // Passing userId for correct directory
     });
 
     const data = await response.json();
     if (data.image_paths?.length > 0) {
       middleItem.classList.add("hidden");
-      loadImages();
+      loadImages();  // Load images using the user-specific path
       createDots();
       if (imageCount > 1) {
         rightArrow.classList.remove('hidden');
@@ -273,7 +274,7 @@ async function downloadImagesAsPDF(e, action) {
     const pdfBlob = pdf.output("blob");
     sendPDFByEmail(pdfBlob);
   }
-   else if (action === "saveToDB") {
+  else if (action === "saveToDB") {
     const formData = new FormData();
     formData.append("pdf", pdf.output("blob"), "images.pdf");
     formData.append("title", "My Comic Title");
@@ -325,20 +326,34 @@ async function previewGenerateImage() {
     if (value) traits.push(`${label} ${value}`);
   }
 
-  const prompt = "A character " + traits.join(", ") + ".";
-  const epochs = 1;
+  const prompt = "A comic character " + traits.join(", ") + ".";
+  const epochs = parseInt(epochsSlider.value) || 1;
   document.getElementById("imagePreview").textContent = "Generating preview...";
+
+  // Fetch userId before making the image generation request
+  const userResponse = await fetch("users/me", {
+    method: "GET",
+    credentials: "include"
+  });
+    
+  const userData = await userResponse.json();
+  userId = userData.user_id; // Get the user ID from the response
+  alert("User ID: " + userId);
 
   try {
     const res = await fetch("/api/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: prompt, type: "preview", count: 1, epochs, inPainting: false })
+      body: JSON.stringify({ text: prompt, type: "preview", count: 1, epochs, extendedPrompt: "" , userId })
     });
+
+    
 
     const data = await res.json();
     if (data.image_paths?.length > 0) {
-      document.getElementById("imagePreview").innerHTML = `<img src="${data.image_paths[0]}" alt="Preview" style="max-width: 100%;" />`;
+      extendedPrompt = prompt;
+      const previewImagesPath = `../images/${userId}/preview/preview_1.png`;
+      document.getElementById("imagePreview").innerHTML = `<img src="${previewImagesPath}" alt="Preview" style="max-width: 100%;" />`;
       previewApplyBtn.classList.remove("hidden");
     } else {
       document.getElementById("imagePreview").textContent = "Image generation failed.";
@@ -378,7 +393,12 @@ MyEvents("click", saveBtn, (e) => {
   downloadForm.classList.remove("hidden");
   overlay.classList.remove("hidden");
 });
-MyEvents("click", clearBtn, cleanImageSection);
+
+clearBtn.addEventListener("click", (e) => {
+  cleanImageSection(e);
+  extendedPrompt = "";
+});
+
 MyEvents("click", downloadImagesBtn, (e) => downloadImagesAsPDF(e, "download"));
 MyEvents("click", saveImagesBtn, (e) => downloadImagesAsPDF(e, "saveToDB"));
 MyEvents("click", emailImagesBtn, (e) => downloadImagesAsPDF(e, "sendEmail"));
@@ -391,8 +411,7 @@ epochsSlider.addEventListener("input", () => {
 previewApplyBtn.addEventListener("click", (e) => {
   e.preventDefault();
   closeModal();
-  inPainting = true;
-  alert("Inpainting: " + inPainting);
+  alert("Extended prompt: " + extendedPrompt);
 });
 
 
@@ -416,5 +435,3 @@ async function sendPDFByEmail(pdfBlob) {
 
   closeModal();
 }
-
-

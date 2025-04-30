@@ -13,6 +13,19 @@ async function loadComicsFromServer() {
     comicList.innerHTML = "<p>Loading comics...</p>";
 
     try {
+        // Fetch current user info to get user_id
+        const userResponse = await fetch("/users/me", {
+            method: "GET",
+            credentials: "include"
+        });
+
+        if (!userResponse.ok) {
+            throw new Error("Failed to get current user.");
+        }
+
+        const userData = await userResponse.json();
+        const userId = userData.user_id;  // Extract the user_id from the response
+
         const response = await fetch("/api/user/comics", {
             method: "GET",
             credentials: "include"
@@ -29,13 +42,17 @@ async function loadComicsFromServer() {
 
         comicList.innerHTML = "";
 
+        // Iterate through comics and fetch thumbnails
         for (const comic of comics) {
             if (!comic.pdf_path) continue;
 
+            // Extract the file name from the PDF path
             const pdfFileName = comic.pdf_path.split("/").pop().replace(/\.pdf$/, "");
-            const thumbPath = `/uploads/thumbnails/${pdfFileName}.png`;
+            // Use user_id to create the correct thumbnail path
+            const thumbPath = `/uploads/users/${userId}/thumbnails/${pdfFileName}_thumbnail.png`;
             const fallbackThumb = "/uploads/defaultThumbnail.png";
 
+            // Check if the thumbnail exists, and set the fallback if not
             const thumbSrc = await checkImageExists(thumbPath) ? thumbPath : fallbackThumb;
 
             renderComicCard(comic, thumbSrc);
@@ -115,4 +132,5 @@ comicList.addEventListener("click", (event) => {
     }
 });
 
+// Initial load of comics from the server
 loadComicsFromServer();

@@ -5,10 +5,11 @@ from typing import Annotated
 from datetime import timedelta
 from uuid import uuid4
 import os
+import shutil  # <-- Added for directory removal
 
 from fastapi import (
     APIRouter, Depends, HTTPException, status, UploadFile, File,
-    Form, Request
+    Form, Request, BackgroundTasks
 )
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt, JWTError
@@ -162,21 +163,28 @@ async def upload_pdf(
     if not pdf.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
-    file_id = str(uuid4())
-    pdf_path = os.path.join(FRONTEND_DIR, "uploads/pdfs", f"{file_id}.pdf")
-    thumb_path = os.path.join(FRONTEND_DIR, "uploads/thumbnails", f"{file_id}.png")
+    # User-specific folder for storing PDFs and thumbnails
+    user_dir = os.path.join(FRONTEND_DIR, "uploads", "users", str(current_user.user_id))  # user-specific path
+    os.makedirs(user_dir, exist_ok=True)
 
-    os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
-    os.makedirs(os.path.dirname(thumb_path), exist_ok=True)
+    # Paths for saving PDFs and Thumbnails
+    file_id = str(uuid4())
+    pdf_path = os.path.join(user_dir, "pdfs", f"{file_id}.pdf")
+    thumb_path = os.path.join(user_dir, "thumbnails", f"{file_id}_thumbnail.png")
+
+    # Save PDF and Thumbnail to the respective folders
+    os.makedirs(os.path.dirname(pdf_path), exist_ok=True)  # Ensure pdfs folder exists
+    os.makedirs(os.path.dirname(thumb_path), exist_ok=True)  # Ensure thumbnails folder exists
 
     with open(pdf_path, "wb") as f: f.write(await pdf.read())
     with open(thumb_path, "wb") as f: f.write(await thumbnail.read())
 
+    # Store the comic information in the database
     comic = Comic(
         user_id=current_user.user_id,
         title=title,
         story_text=story_text,
-        images_path=f"/uploads/pdfs/{file_id}.pdf",
+        images_path=f"/uploads/users/{current_user.user_id}/pdfs/{file_id}.pdf",  # Adjusted path
         total_pages=1
     )
     db.add(comic)
@@ -209,8 +217,6 @@ async def get_user_comics(
         for comic in comics
     ]
 
-
-
 @router.delete("/api/user/comics/{comic_id}")
 async def delete_comic(
     comic_id: int,
@@ -225,22 +231,19 @@ async def delete_comic(
     if not comic:
         raise HTTPException(status_code=404, detail="Comic not found")
 
-    # Remove PDF
+    # Remove the comic files (PDF and thumbnail) only, not the entire user folder
     pdf_path = os.path.join(FRONTEND_DIR, comic.images_path.lstrip("/"))
+    thumb_path = pdf_path.replace("pdfs", "thumbnails").replace(".pdf", "_thumbnail.png")
+
+    # Remove the comic PDF and thumbnail if they exist
     if os.path.exists(pdf_path):
         os.remove(pdf_path)
-
-    # Remove Thumbnail
-    pdf_filename = os.path.basename(comic.images_path)
-    thumbnail_filename = pdf_filename.replace(".pdf", ".png")
-    thumbnail_path = os.path.join(FRONTEND_DIR, "uploads", "thumbnails", thumbnail_filename)
-    if os.path.exists(thumbnail_path):
-        os.remove(thumbnail_path)
+    if os.path.exists(thumb_path):
+        os.remove(thumb_path)
 
     await db.delete(comic)
     await db.commit()
-    return {"message": "Comic and thumbnail deleted successfully"}
-
+    return {"message": "Comic and thumbnails deleted successfully"}
 
 # ======================
 # 🧨 Delete Account
@@ -250,28 +253,21 @@ async def delete_account(
     db: AsyncSession = Depends(get_db),
     current_user: DBUser = Depends(get_current_user)
 ):
-    result = await db.execute(select(Comic).where(Comic.user_id == current_user.user_id))
-    comics = result.scalars().all()
+    # Remove the user's entire folder containing PDFs, Thumbnails, and Images
+    user_folder_path = os.path.join(FRONTEND_DIR, "uploads", "users", str(current_user.user_id))
+    images_folder_path = os.path.join(FRONTEND_DIR, "images", str(current_user.user_id))
 
-    for comic in comics:
-        # Remove PDF
-        file_path = os.path.join(FRONTEND_DIR, comic.images_path.lstrip("/"))
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    # Remove the directories if they exist
+    if os.path.exists(user_folder_path):
+        shutil.rmtree(user_folder_path)  # Use shutil.rmtree to remove non-empty directories
+    
+    if os.path.exists(images_folder_path):
+        shutil.rmtree(images_folder_path)
 
-        # Remove Thumbnail
-        pdf_filename = os.path.basename(comic.images_path)
-        thumbnail_filename = pdf_filename.replace(".pdf", ".png")
-        thumbnail_path = os.path.join(FRONTEND_DIR, "uploads", "thumbnails", thumbnail_filename)
-        if os.path.exists(thumbnail_path):
-            os.remove(thumbnail_path)
-
-        await db.delete(comic)
-
+    # Remove the user's data from the database
     await db.delete(current_user)
     await db.commit()
-    return {"message": "Account and all associated comics and thumbnails deleted"}
-
+    return {"message": "Account and all associated data deleted"}
 
 # ======================
 # ⚙️ Profile Update
@@ -342,9 +338,20 @@ async def delete_user_as_admin(user_id: int, db: AsyncSession = Depends(get_db))
     if not user_obj:
         raise HTTPException(status_code=404, detail="User not found")
 
+    # Remove the user's folder containing PDFs, Thumbnails, and Images
+    user_folder_path = os.path.join(FRONTEND_DIR, "uploads", "users", str(user_obj.user_id))
+    images_folder_path = os.path.join(FRONTEND_DIR, "images", str(user_obj.user_id))
+
+    # Remove the directories if they exist
+    if os.path.exists(user_folder_path):
+        shutil.rmtree(user_folder_path)  # Use shutil.rmtree to remove non-empty directories
+    
+    if os.path.exists(images_folder_path):
+        shutil.rmtree(images_folder_path)
+
     await db.delete(user_obj)
     await db.commit()
-    return {"message": "User and comics deleted"}
+    return {"message": "User and associated data deleted"}
 
 # ======================
 # 📜 Character History
@@ -424,15 +431,12 @@ async def clear_all_history(
     await db.commit()
     return {"message": "All history cleared"}
 
-
 # ============================================================
-# 📧  Send the generated comic to the *current* user by e-mail
+# 📧 Send the generated comic to the *current* user by e-mail
 # ============================================================
 import smtplib
 from email.message import EmailMessage
-from fastapi import BackgroundTasks, UploadFile, File, HTTPException, Depends
 
-# -- Gmail SMTP settings
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 465                   
 SMTP_USER = "mywork9008@gmail.com"
@@ -442,10 +446,6 @@ def _send_comic_email(to_addr: str,
                       pdf_bytes: bytes,
                       filename: str,
                       user_fullname: str) -> None:
-    """
-    Background task: build and send the e-mail with the comic attached.
-    Runs in a thread, so any exception is logged but won’t crash FastAPI.
-    """
     try:
         msg = EmailMessage()
         msg["Subject"] = "Your generated comic"
@@ -477,10 +477,6 @@ async def send_email_endpoint(
     pdf: UploadFile = File(...),
     current_user: DBUser = Depends(get_current_user)
 ):
-    """
-    Receives the uploaded PDF from the front-end and schedules the
-    background e-mail task.  Returns immediately with a JSON status.
-    """
     if not pdf.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
 
